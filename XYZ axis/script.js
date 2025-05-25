@@ -6,7 +6,6 @@ console.log(OrbitControls)
 
 // Scene
 const scene = new THREE.Scene();
-console.log(scene);
 
 // Cursor coordinates
 const cursor = {
@@ -16,7 +15,6 @@ const cursor = {
 window.addEventListener('mousemove', (event) => {
     cursor.x = event.clientX / sizes.width - 0.5;
     cursor.y = - (event.clientY / sizes.height - 0.5);
-    console.log(cursor.x, cursor.y)
 });
 
 // CUBES
@@ -59,9 +57,32 @@ scene.add(axesHelper);
 
 // Sizes
 const sizes = {
-    width: 800,
-    height: 600
+    width: window.innerWidth,
+    height: window.innerHeight
 };
+
+
+// Sizes - Resize ( Native JS )
+window.addEventListener('resize', () => {
+    // Update sizes
+    sizes.width = window.innerWidth,
+    sizes.height = window.innerHeight
+
+    // Update camera
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
+
+    // Update renderer
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+})
+
+// Fullscreen
+window.addEventListener('dblclick', () => 
+{
+    if(!document.fullscreenElement) { canvas.requestFullscreen(); } else document.exitFullscreen();
+})
 
 // Camera
 const camera = new THREE.PerspectiveCamera(60, sizes.width / sizes.height, 0.1, 100);
@@ -81,6 +102,7 @@ const renderer = new THREE.WebGLRenderer({
     canvas: canvas
 });
 renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // make less pixel renderind quality, because ratio:3 is too high for GPU, but our eyes will never see the difference
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
@@ -112,6 +134,9 @@ const tick = () => {
 
     // Update controls
     controls.update(); // for damping
+
+    // Canvas update
+
 
     // Update Objects animation
             // cube1.rotation.y += 0.001 * deltaTime;

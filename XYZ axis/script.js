@@ -17,30 +17,66 @@ window.addEventListener('mousemove', (event) => {
     cursor.y = - (event.clientY / sizes.height - 0.5);
 });
 
-// CUBES
+
+
+// CONUS XYZ
 const group = new THREE.Group();
 scene.add(group);
 
-const cube1 = new THREE.Mesh(
-    new THREE.BoxGeometry(0.1, 0.1, 0.1),
+const conusZ = new THREE.Mesh(
+    new THREE.ConeGeometry(0.01, 0.1, 4),
     new THREE.MeshBasicMaterial({color: 'yellow'})
 );
-cube1.position.set(0, 1, 0);
-group.add(cube1);
+conusZ.position.set(0, 1, 0);
+group.add(conusZ);
 
-const cube2 = new THREE.Mesh(
-    new THREE.BoxGeometry(0.1, 0.1, 0.1),
+const conusX = new THREE.Mesh(
+    new THREE.ConeGeometry(0.01, 0.1, 4),
     new THREE.MeshBasicMaterial({color: 'red'})
 );
-cube2.position.set(1, 0, 0);
-group.add(cube2);
+conusX.position.set(1, 0, 0);
+conusX.rotation.z = Math.PI * - 0.5;
+group.add(conusX);
 
-const cube3 = new THREE.Mesh(
-    new THREE.BoxGeometry(0.1, 0.1, 0.1),
+const conusY = new THREE.Mesh(
+    new THREE.ConeGeometry(0.01, 0.1, 4),
     new THREE.MeshBasicMaterial({color: 'blue'})
 );
-cube3.position.set(0, 0, 1);
-group.add(cube3);
+conusY.position.set(0, 0, 1);
+conusY.rotation.x = Math.PI * 0.5;
+group.add(conusY);
+
+// CUBE
+//  // float32Array
+// const positionsArray = new Float32Array([
+//     0, 0, 0,    // 1st vertex XYZ
+//     0, 1, 0,    // 2nd vertex XYZ
+//     1, 0, 0     // 3rd vertex XYZ
+// ]);
+
+const geometry = new THREE.BufferGeometry();
+const count = 50;
+const positionsArray = new Float32Array(count * 3 * 3)
+
+for(let i = 0; 0 < count * 3 * 3; i++){
+    positionsArray[i] = Math.random();
+
+}
+
+const positionAttribute = new THREE.BufferAttribute(positionsArray, 3); // Number 3 says, how much indexes from array goes to vertex like XYZ
+
+
+geometry.setAttribute('position', positionAttribute);
+const cube = new THREE.Mesh(
+    geometry,
+    new THREE.MeshBasicMaterial({color: 'yellow', wireframe: true})
+);
+// const material = new THREE.MeshBasicMaterial({color: 'yellow', wireframe: true});
+// const cube = new THREE.Mesh(geometry, material)
+cube.scale.set(0.1, 0.1, 0.1);
+cube.position.set(0.5, 0, 0.5);
+scene.add(cube);
+
 
 // Posistion
 

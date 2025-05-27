@@ -3,6 +3,8 @@
 
 # Negeer de map met dependencies
 node_modules/
+three.js-master/
+testing/
 
 # Negeer build output
 /dist
@@ -17,4 +19,3 @@ node_modules/
 config/*
 !config/settings.json
 
-2/

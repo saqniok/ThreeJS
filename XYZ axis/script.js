@@ -58,17 +58,17 @@ const geometry = new THREE.BufferGeometry();
 const count = 50;
 const positionsArray = new Float32Array(count * 3 * 3)
 
-for(let i = 0; 0 < count * 3 * 3; i++){
-    positionsArray[i] = Math.random();
+// for(let i = 0; 0 < count * 3 * 3; i++){
+//     positionsArray[i] = Math.random();
 
-}
+// }
 
 const positionAttribute = new THREE.BufferAttribute(positionsArray, 3); // Number 3 says, how much indexes from array goes to vertex like XYZ
 
 
 geometry.setAttribute('position', positionAttribute);
 const cube = new THREE.Mesh(
-    geometry,
+    new THREE.BoxGeometry(1, 1, 1),
     new THREE.MeshBasicMaterial({color: 'yellow', wireframe: true})
 );
 // const material = new THREE.MeshBasicMaterial({color: 'yellow', wireframe: true});
@@ -198,4 +198,4 @@ const tick = () => {
     window.requestAnimationFrame(tick); 
 };
 
-tick();й
+tick();

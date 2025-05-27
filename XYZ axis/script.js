@@ -7,10 +7,17 @@ import * as dat from 'lil-gui';
  * Debug
  */
 const mainGui = new dat.GUI();
-const scaleFolder = mainGui.addFolder('Scale');
-const rotationFolder = mainGui.addFolder('Rotation')
-const moveFolder = mainGui.addFolder('Move');
-const colorFolder = mainGui.addFolder('Color');
+const folders = {
+    scale: mainGui.addFolder('Scale'),
+    rotation: mainGui.addFolder('Rotation'),
+    move: mainGui.addFolder('Move'),
+    color: mainGui.addFolder('Color')
+}
+
+// const scaleFolder = mainGui.addFolder('Scale');
+// const rotationFolder = mainGui.addFolder('Rotation')
+// const moveFolder = mainGui.addFolder('Move');
+// const colorFolder = mainGui.addFolder('Color');
 
 const parametrs = {
     spin: () => {
@@ -98,25 +105,25 @@ scene.add(mesh);
 
 // --debug controls UI
 // --cube rotation
-rotationFolder.add(mesh.rotation, 'x').min(-Math.PI / 2).max(Math.PI / 2).name('X rotation');
-rotationFolder.add(mesh.rotation, 'y').min(-Math.PI / 2).max(Math.PI / 2).name('Y rotation');
-rotationFolder.add(mesh.rotation, 'z').min(-Math.PI / 2).max(Math.PI / 2).name('Z rotation');
+folders.rotation.add(mesh.rotation, 'x').min(-Math.PI / 2).max(Math.PI / 2).name('X rotation');
+folders.rotation.add(mesh.rotation, 'y').min(-Math.PI / 2).max(Math.PI / 2).name('Y rotation');
+folders.rotation.add(mesh.rotation, 'z').min(-Math.PI / 2).max(Math.PI / 2).name('Z rotation');
 
 // --cube move
-moveFolder.add(mesh.position, 'x').min(-1).max(1).step(0.01).name('X axis');
-moveFolder.add(mesh.position, 'y').min(-1).max(1).step(0.01).name('Y axis');
-moveFolder.add(mesh.position, 'z').min(-1).max(1).step(0.01).name('Z axis');
+folders.move.add(mesh.position, 'x').min(-1).max(1).step(0.01).name('X axis');
+folders.move.add(mesh.position, 'y').min(-1).max(1).step(0.01).name('Y axis');
+folders.move.add(mesh.position, 'z').min(-1).max(1).step(0.01).name('Z axis');
 
 // --cube scale
-scaleFolder.add(mesh.scale, 'x', 0.1, 3).step(0.1).name('Scale X');
-scaleFolder.add(mesh.scale, 'y', 0.1, 3).step(0.1).name('Scale Y');
-scaleFolder.add(mesh.scale, 'z', 0.1, 3).step(0.1).name('Scale Z');
+folders.scale.add(mesh.scale, 'x', 0.1, 3).step(0.1).name('Scale X');
+folders.scale.add(mesh.scale, 'y', 0.1, 3).step(0.1).name('Scale Y');
+folders.scale.add(mesh.scale, 'z', 0.1, 3).step(0.1).name('Scale Z');
 
 // --cube color
-colorFolder.addColor(mesh.material, 'color');
-colorFolder.add(mesh, 'visible'); // make bolean on/off 
-colorFolder.add(mesh.material, 'wireframe');
-mainGui.add(parametrs, 'spin');
+folders.color.addColor(mesh.material, 'color');
+folders.color.add(mesh, 'visible'); // make bolean on/off 
+folders.color.add(mesh.material, 'wireframe');
+folders.color.add(parametrs, 'spin');
 
 // --light
 

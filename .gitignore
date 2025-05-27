@@ -3,7 +3,7 @@
 
 # Negeer de map met dependencies
 node_modules/
-three.js-master/
+threejs-master/
 testing/
 
 # Negeer build output

@@ -1,0 +1,20 @@
+# Negeer alle .log bestanden
+*.log
+
+# Negeer de map met dependencies
+node_modules/
+
+# Negeer build output
+/dist
+
+# Negeer lokale instellingen voor VSCode
+.vscode/
+
+# Negeer omgevingconfiguratie
+.env
+
+# Negeer alles in config behalve settings.json
+config/*
+!config/settings.json
+
+.2/

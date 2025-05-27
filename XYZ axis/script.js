@@ -1,8 +1,22 @@
 import * as THREE from 'three';
-import gsap from 'gsap';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import gsap from 'gsap';
+import * as dat from 'lil-gui';
 
-console.log(OrbitControls)
+/**
+ * Debug
+ */
+const mainGui = new dat.GUI();
+const scaleFolder = mainGui.addFolder('Scale');
+const rotationFolder = mainGui.addFolder('Rotation')
+const moveFolder = mainGui.addFolder('Move');
+const colorFolder = mainGui.addFolder('Color');
+
+const parametrs = {
+    spin: () => {
+        gsap.to(mesh.rotation, {duration: 1, y: mesh.rotation.y + Math.PI * 2})
+    }
+}
 
 // Scene
 const scene = new THREE.Scene();
@@ -47,36 +61,64 @@ conusY.rotation.x = Math.PI * 0.5;
 group.add(conusY);
 
 // CUBE
-//  // float32Array
-// const positionsArray = new Float32Array([
-//     0, 0, 0,    // 1st vertex XYZ
-//     0, 1, 0,    // 2nd vertex XYZ
-//     1, 0, 0     // 3rd vertex XYZ
-// ]);
 
-const geometry = new THREE.BufferGeometry();
-const count = 50;
-const positionsArray = new Float32Array(count * 3 * 3)
+        // //  // float32Array
+        // // const positionsArray = new Float32Array([
+        // //     0, 0, 0,    // 1st vertex XYZ
+        // //     0, 1, 0,    // 2nd vertex XYZ
+        // //     1, 0, 0     // 3rd vertex XYZ
+        // // ]);
 
-// for(let i = 0; 0 < count * 3 * 3; i++){
-//     positionsArray[i] = Math.random();
+        // const geometry = new THREE.BufferGeometry();
+        // const count = 50;
+        // const positionsArray = new Float32Array(count * 3 * 3)
 
-// }
+        // for(let i = 0; i < count * 3 * 3; i++){
+        //     positionsArray[i] = Math.random();
+        // }
 
-const positionAttribute = new THREE.BufferAttribute(positionsArray, 3); // Number 3 says, how much indexes from array goes to vertex like XYZ
+        // const positionAttribute = new THREE.BufferAttribute(positionsArray, 3); // Number 3 says, how much indexes from array goes to vertex like XYZ
 
+        // geometry.setAttribute('position', positionAttribute);
+        // const cube = new THREE.Mesh(
+        //     geometry,
+        //     new THREE.MeshBasicMaterial({color: 'yellow', wireframe: true})
+        // );
+        // cube.scale.set(0.1, 0.1, 0.1);
+        // cube.position.set(0.5, 0, 0.5);
+        // scene.add(cube);
 
-geometry.setAttribute('position', positionAttribute);
-const cube = new THREE.Mesh(
+const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial({color: 'yellow', wireframe: true})
+    new THREE.MeshBasicMaterial({color: 'red', wireframe: true})
 );
-// const material = new THREE.MeshBasicMaterial({color: 'yellow', wireframe: true});
-// const cube = new THREE.Mesh(geometry, material)
-cube.scale.set(0.1, 0.1, 0.1);
-cube.position.set(0.5, 0, 0.5);
-scene.add(cube);
+mesh.scale.set(0.1, 0.1, 0.1);
+mesh.position.set(0.5, 0.5, 0.5);
+scene.add(mesh);
 
+// --debug controls UI
+// --cube rotation
+rotationFolder.add(mesh.rotation, 'x').min(-Math.PI / 2).max(Math.PI / 2).name('X rotation');
+rotationFolder.add(mesh.rotation, 'y').min(-Math.PI / 2).max(Math.PI / 2).name('Y rotation');
+rotationFolder.add(mesh.rotation, 'z').min(-Math.PI / 2).max(Math.PI / 2).name('Z rotation');
+
+// --cube move
+moveFolder.add(mesh.position, 'x').min(-1).max(1).step(0.01).name('X axis');
+moveFolder.add(mesh.position, 'y').min(-1).max(1).step(0.01).name('Y axis');
+moveFolder.add(mesh.position, 'z').min(-1).max(1).step(0.01).name('Z axis');
+
+// --cube scale
+scaleFolder.add(mesh.scale, 'x', 0.1, 3).step(0.1).name('Scale X');
+scaleFolder.add(mesh.scale, 'y', 0.1, 3).step(0.1).name('Scale Y');
+scaleFolder.add(mesh.scale, 'z', 0.1, 3).step(0.1).name('Scale Z');
+
+// --cube color
+colorFolder.addColor(mesh.material, 'color');
+colorFolder.add(mesh, 'visible'); // make bolean on/off 
+colorFolder.add(mesh.material, 'wireframe');
+mainGui.add(parametrs, 'spin');
+
+// --light
 
 // Posistion
 
@@ -115,10 +157,11 @@ window.addEventListener('resize', () => {
 })
 
 // Fullscreen
-window.addEventListener('dblclick', () => 
+window.addEventListener('dblclick', (event) => 
 {
+    if (!event.ctrlKey) return;
     if(!document.fullscreenElement) { canvas.requestFullscreen(); } else document.exitFullscreen();
-})
+});
 
 // Camera
 const camera = new THREE.PerspectiveCamera(60, sizes.width / sizes.height, 0.1, 100);

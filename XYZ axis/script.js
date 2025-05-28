@@ -25,14 +25,32 @@ const parametrs = {
 const scene = new THREE.Scene();
 
 // Texture
-const image = new Image();
-const texture = new THREE.Texture(image);
-image.onload = () => {
-    texture.needsUpdate = true;
-    console.log(texture)
-}
+const loadingManager = new THREE.LoadingManager();
 
-image.src = 'static/textures/door/color.jpg'
+loadingManager.onStart = () => { console.log('onStart') };
+loadingManager.onProgress = () => { console.log('onProgress') };
+loadingManager.onLoad = () => { console.log('onLoad') };
+
+const textureLoader = new THREE.TextureLoader(loadingManager);
+const colorTexture = textureLoader.load('static/textures/minecraft.png');
+// const alphaTexture = textureLoader.load('static/textures/door/alpha.jpg');
+// const heightTexture = textureLoader.load('static/textures/door/height.jpg');
+// const metalnessTexture = textureLoader.load('static/textures/door/metalness.jpg');
+// const normalTexture = textureLoader.load('static/textures/door/normal.jpg');
+// const roughnessTexture = textureLoader.load('static/textures/door/roughness.jpg');
+// const ambientOcclusionTexture = textureLoader.load('static/textures/door/ambientOcclusion.jpg');
+
+// colorTexture.repeat.set(3, 2);
+// colorTexture.wrapS = THREE.RepeatWrapping;
+// colorTexture.wrapT = THREE.RepeatWrapping;
+
+// colorTexture.rotation = Math.PI / 4;
+// colorTexture.center.set(0.5, 0.5); // change pivot center
+colorTexture.generateMipmaps = false;
+colorTexture.minFilter = THREE.NearestFilter;
+colorTexture.magFilter = THREE.NearestFilter;
+
+
 
 // Cursor coordinates
 const cursor = {
@@ -102,8 +120,8 @@ group.add(conusY);
         // scene.add(cube);
 
 const mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(),
-    new THREE.MeshBasicMaterial({map: texture})
+    new THREE.BoxGeometry(),
+    new THREE.MeshBasicMaterial({map: colorTexture})
 );
 mesh.scale.set(0.3, 0.3, 0.3);
 mesh.position.set(0.5, 0.5, 0.5);

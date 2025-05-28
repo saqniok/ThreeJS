@@ -32,13 +32,16 @@ loadingManager.onProgress = () => { console.log('onProgress') };
 loadingManager.onLoad = () => { console.log('onLoad') };
 
 const textureLoader = new THREE.TextureLoader(loadingManager);
-const colorTexture = textureLoader.load('static/textures/minecraft.png');
-// const alphaTexture = textureLoader.load('static/textures/door/alpha.jpg');
-// const heightTexture = textureLoader.load('static/textures/door/height.jpg');
-// const metalnessTexture = textureLoader.load('static/textures/door/metalness.jpg');
-// const normalTexture = textureLoader.load('static/textures/door/normal.jpg');
-// const roughnessTexture = textureLoader.load('static/textures/door/roughness.jpg');
-// const ambientOcclusionTexture = textureLoader.load('static/textures/door/ambientOcclusion.jpg');
+const colorTexture = textureLoader.load('static/textures/door/color.jpg');
+const alphaTexture = textureLoader.load('static/textures/door/alpha.jpg');
+const ambientOcclusionTexture = textureLoader.load('static/textures/door/ambientOcclusion.jpg');
+const heightTexture = textureLoader.load('static/textures/door/height.jpg');
+const metalnessTexture = textureLoader.load('static/textures/door/metalness.jpg');
+const normalTexture = textureLoader.load('static/textures/door/normal.jpg');
+const roughnessTexture = textureLoader.load('static/textures/door/roughness.jpg');
+const matcapTexture = textureLoader.load('static/textures/matcaps/1.png');
+const gradientTexture = textureLoader.load('static/textures/gradients/3.png');
+
 
 // colorTexture.repeat.set(3, 2);
 // colorTexture.wrapS = THREE.RepeatWrapping;
@@ -50,6 +53,28 @@ colorTexture.generateMipmaps = false;
 colorTexture.minFilter = THREE.NearestFilter;
 colorTexture.magFilter = THREE.NearestFilter;
 
+/**
+ * Material and object
+ */
+const material = new THREE.MeshNormalMaterial({map: colorTexture});
+
+const sphere = new THREE.Mesh(
+    new THREE.SphereGeometry(0.5, 16, 16),
+    material
+)
+const plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1, 1, 1),
+    material
+)
+const torus = new THREE.Mesh(
+    new THREE.TorusGeometry(0.5, 0.05),
+    material
+)
+torus.position.x = 1.5;
+sphere.position.x = -1.5;
+scene.add(sphere);
+scene.add(plane);
+scene.add(torus);
 
 
 // Cursor coordinates
@@ -121,10 +146,10 @@ group.add(conusY);
 
 const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(),
-    new THREE.MeshBasicMaterial({map: colorTexture})
+    material
 );
 mesh.scale.set(0.3, 0.3, 0.3);
-mesh.position.set(0.5, 0.5, 0.5);
+mesh.position.set(1, 1, 0.5);
 scene.add(mesh);
 
 // --debug controls UI
@@ -144,10 +169,13 @@ folders.scale.add(mesh.scale, 'y', 0.1, 3).step(0.1).name('Scale Y');
 folders.scale.add(mesh.scale, 'z', 0.1, 3).step(0.1).name('Scale Z');
 
 // --cube color
-folders.color.addColor(mesh.material, 'color');
+// folders.color.addColor(mesh.material, 'color');
+folders.color.add(mesh.material, 'opacity').min(0).max(1).step(0.01).name('visability');
+mesh.material.transparent = true;
 folders.color.add(mesh, 'visible'); // make bolean on/off 
 folders.color.add(mesh.material, 'wireframe');
 folders.color.add(parametrs, 'spin');
+
 
 // --light
 
@@ -201,7 +229,7 @@ const camera = new THREE.PerspectiveCamera(60, sizes.width / sizes.height, 0.1, 
 // const aspectRatio = sizes.width / sizes.height;
 // const camera = new THREE.OrthographicCamera(-1 * aspectRatio, 1 * aspectRatio, 1, -1, 0.1, 100)
 
-camera.position.set(2, 2, 2);
+camera.position.set(3, 3, 3);
 scene.add(camera);
 
 
@@ -231,16 +259,20 @@ const clock = new THREE.Clock();
 // Animations
 const tick = () => { 
 
-    // Time
-    const currentTime = Date.now();
-    
-    const deltaTime = currentTime - time;
-    time = currentTime;
+        // Time
+        // const currentTime = Date.now();
+        
+        // const deltaTime = currentTime - time;
+        // time = currentTime;
 
 
     // Clock
     const elapsedTime = clock.getElapsedTime();
 
+    // Update objects
+    sphere.rotation.y = 0.4 * elapsedTime;
+    plane.rotation.z = 0.4 * elapsedTime;
+    torus.rotation.y = 0.4 * elapsedTime;
 
     // Update controls
     controls.update(); // for damping

@@ -14,11 +14,7 @@ const folders = {
     color: mainGui.addFolder('Color')
 }
 
-// const scaleFolder = mainGui.addFolder('Scale');
-// const rotationFolder = mainGui.addFolder('Rotation')
-// const moveFolder = mainGui.addFolder('Move');
-// const colorFolder = mainGui.addFolder('Color');
-
+// Object for gui
 const parametrs = {
     spin: () => {
         gsap.to(mesh.rotation, {duration: 1, y: mesh.rotation.y + Math.PI * 2})
@@ -27,6 +23,16 @@ const parametrs = {
 
 // Scene
 const scene = new THREE.Scene();
+
+// Texture
+const image = new Image();
+const texture = new THREE.Texture(image);
+image.onload = () => {
+    texture.needsUpdate = true;
+    console.log(texture)
+}
+
+image.src = 'static/textures/door/color.jpg'
 
 // Cursor coordinates
 const cursor = {
@@ -96,10 +102,10 @@ group.add(conusY);
         // scene.add(cube);
 
 const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial({color: 'red', wireframe: true})
+    new THREE.SphereGeometry(),
+    new THREE.MeshBasicMaterial({map: texture})
 );
-mesh.scale.set(0.1, 0.1, 0.1);
+mesh.scale.set(0.3, 0.3, 0.3);
 mesh.position.set(0.5, 0.5, 0.5);
 scene.add(mesh);
 

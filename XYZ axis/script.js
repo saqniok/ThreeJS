@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import gsap from 'gsap';
 import * as dat from 'lil-gui';
+// import { color } from 'three/tsl';
 
 /**
  * Debug
@@ -39,7 +40,7 @@ const heightTexture = textureLoader.load('static/textures/door/height.jpg');
 const metalnessTexture = textureLoader.load('static/textures/door/metalness.jpg');
 const normalTexture = textureLoader.load('static/textures/door/normal.jpg');
 const roughnessTexture = textureLoader.load('static/textures/door/roughness.jpg');
-const matcapTexture = textureLoader.load('static/textures/matcaps/1.png');
+const matcapTexture = textureLoader.load('/static/textures/matcaps/1.png');
 const gradientTexture = textureLoader.load('static/textures/gradients/3.png');
 
 
@@ -49,14 +50,20 @@ const gradientTexture = textureLoader.load('static/textures/gradients/3.png');
 
 // colorTexture.rotation = Math.PI / 4;
 // colorTexture.center.set(0.5, 0.5); // change pivot center
-colorTexture.generateMipmaps = false;
-colorTexture.minFilter = THREE.NearestFilter;
-colorTexture.magFilter = THREE.NearestFilter;
+// colorTexture.generateMipmaps = false;
+// colorTexture.minFilter = THREE.NearestFilter;
+// colorTexture.magFilter = THREE.NearestFilter;
 
 /**
  * Material and object
  */
-const material = new THREE.MeshNormalMaterial({map: colorTexture});
+// const material = new THREE.MeshBasicMaterial({map: colorTexture});
+// const material = new THREE.MeshNormalMaterial();
+// const material = new THREE.MeshMatcapMaterial();
+// material.matcap = matcapTexture;
+// const material = new THREE.MeshDepthMaterial();
+const material = new THREE.MeshLambertMaterial();
+// const material = new THREE.MeshPhongMaterial();
 
 const sphere = new THREE.Mesh(
     new THREE.SphereGeometry(0.5, 16, 16),
@@ -67,7 +74,7 @@ const plane = new THREE.Mesh(
     material
 )
 const torus = new THREE.Mesh(
-    new THREE.TorusGeometry(0.5, 0.05),
+    new THREE.TorusGeometry(0.5, 0.1),
     material
 )
 torus.position.x = 1.5;
@@ -75,6 +82,17 @@ sphere.position.x = -1.5;
 scene.add(sphere);
 scene.add(plane);
 scene.add(torus);
+
+/**
+ * Light
+ */
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+ambientLight.position.set();
+scene.add(ambientLight);
+
+const pointLight = new THREE.PointLight(0xffffff, 1);
+pointLight.position.set(-1, 0, 0.5);
+scene.add(pointLight);
 
 
 // Cursor coordinates
@@ -170,11 +188,11 @@ folders.scale.add(mesh.scale, 'z', 0.1, 3).step(0.1).name('Scale Z');
 
 // --cube color
 // folders.color.addColor(mesh.material, 'color');
-folders.color.add(mesh.material, 'opacity').min(0).max(1).step(0.01).name('visability');
-mesh.material.transparent = true;
-folders.color.add(mesh, 'visible'); // make bolean on/off 
-folders.color.add(mesh.material, 'wireframe');
-folders.color.add(parametrs, 'spin');
+// folders.color.add(mesh.material, 'opacity').min(0).max(1).step(0.01).name('visability');
+// mesh.material.transparent = true;
+// folders.color.add(mesh, 'visible'); // make bolean on/off 
+// folders.color.add(mesh.material, 'wireframe');
+// folders.color.add(parametrs, 'spin');
 
 
 // --light

@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import gsap from 'gsap';
 import * as dat from 'lil-gui';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
 // import { alphaT } from 'three/tsl';
 // import typefaceFont from 'three/examples/fonts/helvetiker_regular.typeface.json';
 
@@ -48,7 +49,29 @@ const fontLoader = new FontLoader();
 
 // Font
 fontLoader.load('static/font/helvetiker_regular.typeface.json',
-    () => { console.log ('font loaded')}
+    (font) => {
+        console.log(font);
+        const textGeometry = new TextGeometry(
+            'Aleksand Svedov\n    3D Portfolio',
+            {
+                font: font,
+                size: 0.5,
+                height: 1,
+                curveSegments: 10,
+                bevelEnabled: true,
+                bevelThickness: 0.03,
+                bevelSize:0.01,
+                bevelOffset: 0,
+                bevelSegments: 5
+            }
+        )
+        const textMaterial = new THREE.MeshNormalMaterial();
+        const text = new THREE.Mesh(textGeometry, textMaterial);
+        textGeometry.center();
+        text.position.set(0, 2, 0);
+        text.scale.set(1, 1, 0.003); // ← убрать искажение
+        scene.add(text);
+    }
 );
 
 // Texture
@@ -111,6 +134,8 @@ const material = new THREE.MeshStandardMaterial();
 // material.metalnessMap = metalnessTexture;
 // material.roughnessMap = roughnessTexture;
 // material.transparent = true;
+material.metalness = 1;
+material.roughness = 0;
 material.envMap = environmentMapTexture;
 
 
@@ -308,7 +333,7 @@ const camera = new THREE.PerspectiveCamera(60, sizes.width / sizes.height, 0.1, 
 // const aspectRatio = sizes.width / sizes.height;
 // const camera = new THREE.OrthographicCamera(-1 * aspectRatio, 1 * aspectRatio, 1, -1, 0.1, 100)
 
-camera.position.set(3, 3, 3);
+camera.position.set(0, 0.5, 4);
 scene.add(camera);
 
 

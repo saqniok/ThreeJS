@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import gsap from 'gsap';
 import * as dat from 'lil-gui';
-// import { color } from 'three/tsl';
+// import { alphaT } from 'three/tsl';
+
 
 /**
  * Debug
@@ -12,7 +13,8 @@ const folders = {
     scale: mainGui.addFolder('Scale'),
     rotation: mainGui.addFolder('Rotation'),
     move: mainGui.addFolder('Move'),
-    color: mainGui.addFolder('Color')
+    color: mainGui.addFolder('Color'),
+    material: mainGui.addFolder('Material')
 }
 
 // Object for gui
@@ -33,6 +35,8 @@ loadingManager.onProgress = () => { console.log('onProgress') };
 loadingManager.onLoad = () => { console.log('onLoad') };
 
 const textureLoader = new THREE.TextureLoader(loadingManager);
+const cubeTextureLoader = new THREE.CubeTextureLoader();
+
 const colorTexture = textureLoader.load('static/textures/door/color.jpg');
 const alphaTexture = textureLoader.load('static/textures/door/alpha.jpg');
 const ambientOcclusionTexture = textureLoader.load('static/textures/door/ambientOcclusion.jpg');
@@ -41,7 +45,16 @@ const metalnessTexture = textureLoader.load('static/textures/door/metalness.jpg'
 const normalTexture = textureLoader.load('static/textures/door/normal.jpg');
 const roughnessTexture = textureLoader.load('static/textures/door/roughness.jpg');
 const matcapTexture = textureLoader.load('/static/textures/matcaps/1.png');
-const gradientTexture = textureLoader.load('static/textures/gradients/3.png');
+const gradientTexture = textureLoader.load('/static/textures/gradients/5.jpg');
+
+const environmentMapTexture = cubeTextureLoader.load([
+    'static/textures/environmentMaps/1/px.jpg',
+    'static/textures/environmentMaps/1/nx.jpg',
+    'static/textures/environmentMaps/1/py.jpg',
+    'static/textures/environmentMaps/1/ny.jpg',
+    'static/textures/environmentMaps/1/pz.jpg',
+    'static/textures/environmentMaps/1/nz.jpg'
+])
 
 
 // colorTexture.repeat.set(3, 2);
@@ -62,21 +75,48 @@ const gradientTexture = textureLoader.load('static/textures/gradients/3.png');
 // const material = new THREE.MeshMatcapMaterial();
 // material.matcap = matcapTexture;
 // const material = new THREE.MeshDepthMaterial();
-const material = new THREE.MeshLambertMaterial();
+// const material = new THREE.MeshLambertMaterial();
 // const material = new THREE.MeshPhongMaterial();
+// material.shininess = 100;
 
+// const material = new THREE.MeshToonMaterial();
+// gradientTexture.minFilter = THREE.NearestFilter;
+// gradientTexture.magFilter = THREE.NearestFilter;
+// gradientTexture.generateMipmaps = false;
+// material.gradientMap = gradientTexture;
+
+const material = new THREE.MeshStandardMaterial();
+// material.map = colorTexture;
+// material.normalMap = normalTexture;
+// material.alphaMap = alphaTexture;
+// material.aoMap = ambientOcclusionTexture;
+// material.aoMapIntensity = 1;
+// material.displacementMap = heightTexture
+// material.displacementScale = 0.05;
+// material.metalnessMap = metalnessTexture;
+// material.roughnessMap = roughnessTexture;
+// material.transparent = true;
+material.envMap = environmentMapTexture;
+
+
+
+// Objects
 const sphere = new THREE.Mesh(
-    new THREE.SphereGeometry(0.5, 16, 16),
+    new THREE.SphereGeometry(0.5, 64, 64),
     material
 )
 const plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 1, 1, 1),
+    new THREE.PlaneGeometry(1, 1, 32, 32),
     material
 )
 const torus = new THREE.Mesh(
-    new THREE.TorusGeometry(0.5, 0.1),
+    new THREE.TorusGeometry(0.5, 0.1, 64, 128),
     material
 )
+// -- UV
+plane.geometry.setAttribute('uv2', new THREE.BufferAttribute(plane.geometry.attributes.uv.array, 2))
+
+
 torus.position.x = 1.5;
 sphere.position.x = -1.5;
 scene.add(sphere);
@@ -91,7 +131,7 @@ ambientLight.position.set();
 scene.add(ambientLight);
 
 const pointLight = new THREE.PointLight(0xffffff, 1);
-pointLight.position.set(-1, 0, 0.5);
+pointLight.position.set(0, 0, 0.5);
 scene.add(pointLight);
 
 
@@ -187,13 +227,19 @@ folders.scale.add(mesh.scale, 'y', 0.1, 3).step(0.1).name('Scale Y');
 folders.scale.add(mesh.scale, 'z', 0.1, 3).step(0.1).name('Scale Z');
 
 // --cube color
-// folders.color.addColor(mesh.material, 'color');
-// folders.color.add(mesh.material, 'opacity').min(0).max(1).step(0.01).name('visability');
-// mesh.material.transparent = true;
-// folders.color.add(mesh, 'visible'); // make bolean on/off 
-// folders.color.add(mesh.material, 'wireframe');
-// folders.color.add(parametrs, 'spin');
+folders.color.addColor(material, 'color');
+folders.color.add(material, 'opacity').min(0).max(1).step(0.01).name('visability');
+folders.color.add(material, 'visible'); // make bolean on/off 
+folders.color.add(material, 'wireframe');
+folders.color.add(parametrs, 'spin');
 
+// -- Material
+folders.material.add(material, 'metalness').min(0).max(1).step(0.001).name('metalness');
+folders.material.add(material, 'roughness').min(0).max(1).step(0.001).name('roughness');
+folders.material.add(material, 'aoMapIntensity').min(0).max(3).step(0.001).name('aoMapIntensity');
+folders.material.add(material, 'displacementScale').min(-1).max(1).step(0.0001).name('discplacement Scale')
+folders.material.add(material.normalScale, 'y').min(-10).max(10).step(0.01).name('nomalMap Intensity Y')
+folders.material.add(material.normalScale, 'x').min(-10).max(10).step(0.01).name('nomalMap Intensity X')
 
 // --light
 
@@ -289,7 +335,8 @@ const tick = () => {
 
     // Update objects
     sphere.rotation.y = 0.4 * elapsedTime;
-    plane.rotation.z = 0.4 * elapsedTime;
+    torus.rotation.x = 0.2 * elapsedTime;
+    // plane.rotation.z = 0.4 * elapsedTime;
     torus.rotation.y = 0.4 * elapsedTime;
 
     // Update controls

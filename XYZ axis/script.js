@@ -57,7 +57,7 @@ fontLoader.load('static/font/helvetiker_regular.typeface.json',
                 font: font,
                 size: 0.5,
                 height: 1,
-                curveSegments: 10,
+                curveSegments: 5,
                 bevelEnabled: true,
                 bevelThickness: 0.03,
                 bevelSize:0.01,
@@ -65,12 +65,30 @@ fontLoader.load('static/font/helvetiker_regular.typeface.json',
                 bevelSegments: 5
             }
         )
-        const textMaterial = new THREE.MeshNormalMaterial();
+
+        const textMaterial = new THREE.MeshMatcapMaterial({matcap: matcapTexture});
         const text = new THREE.Mesh(textGeometry, textMaterial);
         textGeometry.center();
         text.position.set(0, 2, 0);
         text.scale.set(1, 1, 0.003); // ← убрать искажение
         scene.add(text);
+
+        const donutGeometry = new THREE.TorusGeometry(0.2, 0.1, 64, 128);
+        const donutMaterial = new THREE.MeshMatcapMaterial({matcap: matcapTexture})
+
+        for(let i = 1; i < 100; i++) {
+            const donut = new THREE.Mesh(donutGeometry, donutMaterial);
+            const rotation = Math.random() * Math.PI;
+
+            donut.rotation.set(rotation, rotation, rotation)
+            donut.position.set(
+            (Math.random() - 0.5) * 10, 
+            (Math.random() - 0.5) * 10,
+            (Math.random() - 0.5) * 10
+        );
+            scene.add(donut);
+
+        }
     }
 );
 
@@ -82,7 +100,7 @@ const heightTexture = textureLoader.load('static/textures/door/height.jpg');
 const metalnessTexture = textureLoader.load('static/textures/door/metalness.jpg');
 const normalTexture = textureLoader.load('static/textures/door/normal.jpg');
 const roughnessTexture = textureLoader.load('static/textures/door/roughness.jpg');
-const matcapTexture = textureLoader.load('/static/textures/matcaps/1.png');
+const matcapTexture = textureLoader.load('/static/textures/matcaps/3.png');
 const gradientTexture = textureLoader.load('/static/textures/gradients/5.jpg');
 
 const environmentMapTexture = cubeTextureLoader.load([
@@ -171,7 +189,7 @@ ambientLight.position.set();
 scene.add(ambientLight);
 
 const pointLight = new THREE.PointLight(0xffffff, 1);
-pointLight.position.set(0, 0, 0.5);
+pointLight.position.set(0, 2, 0);
 scene.add(pointLight);
 
 

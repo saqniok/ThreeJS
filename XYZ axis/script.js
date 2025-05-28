@@ -2,13 +2,17 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import gsap from 'gsap';
 import * as dat from 'lil-gui';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 // import { alphaT } from 'three/tsl';
+// import typefaceFont from 'three/examples/fonts/helvetiker_regular.typeface.json';
 
 
 /**
  * Debug
  */
 const mainGui = new dat.GUI();
+
+
 const folders = {
     scale: mainGui.addFolder('Scale'),
     rotation: mainGui.addFolder('Rotation'),
@@ -16,6 +20,10 @@ const folders = {
     color: mainGui.addFolder('Color'),
     material: mainGui.addFolder('Material')
 }
+
+for (const key in folders) {
+    folders[key].close();
+};
 
 // Object for gui
 const parametrs = {
@@ -27,7 +35,7 @@ const parametrs = {
 // Scene
 const scene = new THREE.Scene();
 
-// Texture
+// Loaders
 const loadingManager = new THREE.LoadingManager();
 
 loadingManager.onStart = () => { console.log('onStart') };
@@ -36,7 +44,14 @@ loadingManager.onLoad = () => { console.log('onLoad') };
 
 const textureLoader = new THREE.TextureLoader(loadingManager);
 const cubeTextureLoader = new THREE.CubeTextureLoader();
+const fontLoader = new FontLoader();
 
+// Font
+fontLoader.load('static/font/helvetiker_regular.typeface.json',
+    () => { console.log ('font loaded')}
+);
+
+// Texture
 const colorTexture = textureLoader.load('static/textures/door/color.jpg');
 const alphaTexture = textureLoader.load('static/textures/door/alpha.jpg');
 const ambientOcclusionTexture = textureLoader.load('static/textures/door/ambientOcclusion.jpg');

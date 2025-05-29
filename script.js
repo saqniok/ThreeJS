@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import * as dat from 'lil-gui';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
+import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js'
 // import { alphaT } from 'three/tsl';
 // import typefaceFont from 'three/examples/fonts/helvetiker_regular.typeface.json';
 
@@ -19,7 +20,8 @@ const folders = {
     rotation: mainGui.addFolder('Rotation'),
     move: mainGui.addFolder('Move'),
     color: mainGui.addFolder('Color'),
-    material: mainGui.addFolder('Material')
+    material: mainGui.addFolder('Material'),
+    light: mainGui.addFolder('Light')
 }
 
 for (const key in folders) {
@@ -48,49 +50,49 @@ const cubeTextureLoader = new THREE.CubeTextureLoader();
 const fontLoader = new FontLoader();
 
 // Font
-fontLoader.load('static/font/helvetiker_regular.typeface.json',
-    (font) => {
-        console.log(font);
-        const textGeometry = new TextGeometry(
-            'Hello 3D World!',
-            {
-                font: font,
-                size: 0.5,
-                height: 1,
-                curveSegments: 5,
-                bevelEnabled: true,
-                bevelThickness: 0.03,
-                bevelSize:0.01,
-                bevelOffset: 0,
-                bevelSegments: 5
-            }
-        )
+// fontLoader.load('static/font/helvetiker_regular.typeface.json',
+//     (font) => {
+//         console.log(font);
+//         const textGeometry = new TextGeometry(
+//             'Hello 3D World!',
+//             {
+//                 font: font,
+//                 size: 0.5,
+//                 height: 1,
+//                 curveSegments: 5,
+//                 bevelEnabled: true,
+//                 bevelThickness: 0.03,
+//                 bevelSize:0.01,
+//                 bevelOffset: 0,
+//                 bevelSegments: 5
+//             }
+//         )
 
-        const textMaterial = new THREE.MeshMatcapMaterial({matcap: matcapTexture});
-        const text = new THREE.Mesh(textGeometry, textMaterial);
-        textGeometry.center();
-        text.position.set(0, 2, 0);
-        text.scale.set(1, 1, 0.003); // ← убрать искажение
-        scene.add(text);
+//         const textMaterial = new THREE.MeshMatcapMaterial({matcap: matcapTexture});
+//         const text = new THREE.Mesh(textGeometry, textMaterial);
+//         textGeometry.center();
+//         text.position.set(0, 2, 0);
+//         text.scale.set(1, 1, 0.003); // ← убрать искажение
+//         scene.add(text);
 
-        const donutGeometry = new THREE.TorusGeometry(0.2, 0.1, 64, 128);
-        const donutMaterial = new THREE.MeshMatcapMaterial({matcap: matcapTexture})
+//         const donutGeometry = new THREE.TorusGeometry(0.2, 0.1, 64, 128);
+//         const donutMaterial = new THREE.MeshMatcapMaterial({matcap: matcapTexture})
 
-        for(let i = 1; i < 100; i++) {
-            const donut = new THREE.Mesh(donutGeometry, donutMaterial);
-            const rotation = Math.random() * Math.PI;
+//         for(let i = 1; i < 100; i++) {
+//             const donut = new THREE.Mesh(donutGeometry, donutMaterial);
+//             const rotation = Math.random() * Math.PI;
 
-            donut.rotation.set(rotation, rotation, rotation)
-            donut.position.set(
-            (Math.random() - 0.5) * 10, 
-            (Math.random() - 0.5) * 10,
-            (Math.random() - 0.5) * 10
-        );
-            scene.add(donut);
+//             donut.rotation.set(rotation, rotation, rotation)
+//             donut.position.set(
+//             (Math.random() - 0.5) * 10, 
+//             (Math.random() - 0.5) * 10,
+//             (Math.random() - 0.5) * 10
+//         );
+//             scene.add(donut);
 
-        }
-    }
-);
+//         }
+//     }
+// );
 
 // Texture
 const colorTexture = textureLoader.load('static/textures/door/color.jpg');
@@ -103,14 +105,14 @@ const roughnessTexture = textureLoader.load('static/textures/door/roughness.jpg'
 const matcapTexture = textureLoader.load('/static/textures/matcaps/3.png');
 const gradientTexture = textureLoader.load('/static/textures/gradients/5.jpg');
 
-const environmentMapTexture = cubeTextureLoader.load([
-    'static/textures/environmentMaps/1/px.jpg',
-    'static/textures/environmentMaps/1/nx.jpg',
-    'static/textures/environmentMaps/1/py.jpg',
-    'static/textures/environmentMaps/1/ny.jpg',
-    'static/textures/environmentMaps/1/pz.jpg',
-    'static/textures/environmentMaps/1/nz.jpg'
-])
+// const environmentMapTexture = cubeTextureLoader.load([
+//     'static/textures/environmentMaps/1/px.jpg',
+//     'static/textures/environmentMaps/1/nx.jpg',
+//     'static/textures/environmentMaps/1/py.jpg',
+//     'static/textures/environmentMaps/1/ny.jpg',
+//     'static/textures/environmentMaps/1/pz.jpg',
+//     'static/textures/environmentMaps/1/nz.jpg'
+// ])
 
 
 // colorTexture.repeat.set(3, 2);
@@ -152,9 +154,9 @@ const material = new THREE.MeshStandardMaterial();
 // material.metalnessMap = metalnessTexture;
 // material.roughnessMap = roughnessTexture;
 // material.transparent = true;
-material.metalness = 1;
-material.roughness = 0;
-material.envMap = environmentMapTexture;
+material.metalness = 0;
+material.roughness = 0.2;
+// material.envMap = environmentMapTexture;
 
 
 
@@ -172,11 +174,14 @@ const torus = new THREE.Mesh(
     material
 )
 // -- UV
-plane.geometry.setAttribute('uv2', new THREE.BufferAttribute(plane.geometry.attributes.uv.array, 2))
+// plane.geometry.setAttribute('uv2', new THREE.BufferAttribute(plane.geometry.attributes.uv.array, 2))
 
 
 torus.position.x = 1.5;
 sphere.position.x = -1.5;
+plane.rotation.x = Math.PI / -2;
+plane.position.y = -0.5;
+plane.scale.set(5, 5, 5);
 scene.add(sphere);
 scene.add(plane);
 scene.add(torus);
@@ -184,14 +189,55 @@ scene.add(torus);
 /**
  * Light
  */
-const ambientLight = new THREE.AmbientLight(0xffffff, 1);
-ambientLight.position.set();
+// minimal cost
+const ambientLight = new THREE.AmbientLight(); // light comes from everywhere
+ambientLight.color = new THREE.Color(0xffffff);
+ambientLight.intensity = 0;
 scene.add(ambientLight);
 
-const pointLight = new THREE.PointLight(0xffffff, 1);
-pointLight.position.set(0, 2, 0);
-scene.add(pointLight);
+// minimal cost
+const hemisphereLight = new THREE.HemisphereLight('red', 'blue', 0.1);
+scene.add(hemisphereLight);
 
+// middle cost
+const pointLight = new THREE.PointLight(0xffffff, 2, 10);
+pointLight.position.set(0, 0.5, 1);
+//scene.add(pointLight);
+
+// middle cost
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.1);
+directionalLight.position.set(1, 0.25, 0.5);
+scene.add(directionalLight);
+
+// hight cost
+const rectAreaLight = new THREE.RectAreaLight('yellow', 3, 1, 1);
+rectAreaLight.position.set(-1, 0, 1)
+rectAreaLight.lookAt(new THREE.Vector3())
+// scene.add(rectAreaLight);
+
+// hight cost
+const spotLight = new THREE.SpotLight('purple', 1, 10, Math.PI * 0.1, 0.25, 1);
+spotLight.position.set(0, 2, 3)
+spotLight.target = torus;
+scene.add(spotLight);
+
+/**
+ * Light Helpers
+ */
+const hemisphereLightHelper = new THREE.HemisphereLightHelper(hemisphereLight, 0.1);
+scene.add(hemisphereLightHelper);
+
+const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.1);
+scene.add(directionalLightHelper);
+
+const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.1);
+scene.add(pointLightHelper);
+
+const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+scene.add(spotLightHelper);
+
+const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight);
+scene.add(rectAreaLightHelper);
 
 // Cursor coordinates
 const cursor = {
@@ -206,31 +252,31 @@ window.addEventListener('mousemove', (event) => {
 
 
 // CONUS XYZ
-const group = new THREE.Group();
-scene.add(group);
+// const group = new THREE.Group();
+// scene.add(group);
 
-const conusZ = new THREE.Mesh(
-    new THREE.ConeGeometry(0.01, 0.1, 4),
-    new THREE.MeshBasicMaterial({color: 'yellow'})
-);
-conusZ.position.set(0, 1, 0);
-group.add(conusZ);
+// const conusZ = new THREE.Mesh(
+//     new THREE.ConeGeometry(0.01, 0.1, 4),
+//     new THREE.MeshBasicMaterial({color: 'yellow'})
+// );
+// conusZ.position.set(0, 1, 0);
+// group.add(conusZ);
 
-const conusX = new THREE.Mesh(
-    new THREE.ConeGeometry(0.01, 0.1, 4),
-    new THREE.MeshBasicMaterial({color: 'red'})
-);
-conusX.position.set(1, 0, 0);
-conusX.rotation.z = Math.PI * - 0.5;
-group.add(conusX);
+// const conusX = new THREE.Mesh(
+//     new THREE.ConeGeometry(0.01, 0.1, 4),
+//     new THREE.MeshBasicMaterial({color: 'red'})
+// );
+// conusX.position.set(1, 0, 0);
+// conusX.rotation.z = Math.PI * - 0.5;
+// group.add(conusX);
 
-const conusY = new THREE.Mesh(
-    new THREE.ConeGeometry(0.01, 0.1, 4),
-    new THREE.MeshBasicMaterial({color: 'blue'})
-);
-conusY.position.set(0, 0, 1);
-conusY.rotation.x = Math.PI * 0.5;
-group.add(conusY);
+// const conusY = new THREE.Mesh(
+//     new THREE.ConeGeometry(0.01, 0.1, 4),
+//     new THREE.MeshBasicMaterial({color: 'blue'})
+// );
+// conusY.position.set(0, 0, 1);
+// conusY.rotation.x = Math.PI * 0.5;
+// group.add(conusY);
 
 // CUBE
 
@@ -264,8 +310,7 @@ const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(),
     material
 );
-mesh.scale.set(0.3, 0.3, 0.3);
-mesh.position.set(1, 1, 0.5);
+mesh.scale.set(0.6, 0.6, 0.6);
 scene.add(mesh);
 
 // --debug controls UI
@@ -295,11 +340,12 @@ folders.color.add(parametrs, 'spin');
 folders.material.add(material, 'metalness').min(0).max(1).step(0.001).name('metalness');
 folders.material.add(material, 'roughness').min(0).max(1).step(0.001).name('roughness');
 folders.material.add(material, 'aoMapIntensity').min(0).max(3).step(0.001).name('aoMapIntensity');
-folders.material.add(material, 'displacementScale').min(-1).max(1).step(0.0001).name('discplacement Scale')
-folders.material.add(material.normalScale, 'y').min(-10).max(10).step(0.01).name('nomalMap Intensity Y')
-folders.material.add(material.normalScale, 'x').min(-10).max(10).step(0.01).name('nomalMap Intensity X')
+folders.material.add(material, 'displacementScale').min(-1).max(1).step(0.0001).name('discplacement Scale');
+folders.material.add(material.normalScale, 'y').min(-10).max(10).step(0.01).name('nomalMap Intensity Y');
+folders.material.add(material.normalScale, 'x').min(-10).max(10).step(0.01).name('nomalMap Intensity X');
 
 // --light
+folders.light.add(ambientLight, 'intensity').min(0).max(10).step(0.01).name('ambientLight Intensity');
 
 // Posistion
 

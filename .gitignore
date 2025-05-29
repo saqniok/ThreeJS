@@ -5,7 +5,6 @@
 node_modules/
 threejs-master/
 testing/
-static/
 
 # Negeer build output
 /dist
@@ -20,3 +19,4 @@ static/
 config/*
 !config/settings.json
 
+.vercel

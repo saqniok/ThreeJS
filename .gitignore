@@ -5,6 +5,7 @@
 node_modules/
 threejs-master/
 testing/
+static/
 
 # Negeer build output
 /dist

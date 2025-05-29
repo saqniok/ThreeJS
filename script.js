@@ -52,7 +52,7 @@ fontLoader.load('static/font/helvetiker_regular.typeface.json',
     (font) => {
         console.log(font);
         const textGeometry = new TextGeometry(
-            'Aleksand Svedov\n    3D Portfolio',
+            'Hello 3D World!',
             {
                 font: font,
                 size: 0.5,

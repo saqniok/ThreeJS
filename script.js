@@ -49,6 +49,7 @@ const textureLoader = new THREE.TextureLoader(loadingManager);
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 const fontLoader = new FontLoader();
 
+
 // Font
 // fontLoader.load('static/font/helvetiker_regular.typeface.json',
 //     (font) => {
@@ -104,6 +105,9 @@ const normalTexture = textureLoader.load('static/textures/door/normal.jpg');
 const roughnessTexture = textureLoader.load('static/textures/door/roughness.jpg');
 const matcapTexture = textureLoader.load('/static/textures/matcaps/3.png');
 const gradientTexture = textureLoader.load('/static/textures/gradients/5.jpg');
+
+const backedShadow = textureLoader.load('/static/textures/bakedShadow.jpg');
+const simpleSphereShadow = textureLoader.load('/static/textures/simpleShadow.jpg')
 
 // const environmentMapTexture = cubeTextureLoader.load([
 //     'static/textures/environmentMaps/1/px.jpg',
@@ -167,7 +171,9 @@ const sphere = new THREE.Mesh(
 )
 const plane = new THREE.Mesh(
     new THREE.PlaneGeometry(1, 1, 32, 32),
-    material
+    // new THREE.MeshBasicMaterial({map: backedShadow})
+    // new THREE.MeshStandardMaterial({map: simpleSphereShadow})
+    // material
 )
 const torus = new THREE.Mesh(
     new THREE.TorusGeometry(0.5, 0.1, 64, 128),
@@ -178,13 +184,26 @@ const torus = new THREE.Mesh(
 
 
 torus.position.x = 1.5;
-sphere.position.x = -1.5;
+sphere.position.x = 0;
+plane.position.y = -0.5;
 plane.rotation.x = Math.PI / -2;
-plane.position.y = -0.7;
 plane.scale.set(5, 5, 5);
 scene.add(sphere);
 scene.add(plane);
 scene.add(torus);
+
+// Create sphere shadow using new plane mesh with shadow texture
+const sphereShadow = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.5, 1.5),
+    new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        transparent: true, // if you want use alpga channel
+        alphaMap: simpleSphereShadow
+    })
+)
+sphereShadow.rotation.x = -Math.PI / 2;
+sphereShadow.position.y = plane.position.y + 0.01;
+scene.add(sphereShadow);
 
 /**
  * Light
@@ -192,33 +211,32 @@ scene.add(torus);
 // minimal cost
 const ambientLight = new THREE.AmbientLight(); // light comes from everywhere
 ambientLight.color = new THREE.Color(0xffffff);
-ambientLight.intensity = 0.1;
-scene.add(ambientLight);
+ambientLight.intensity = 0.4;
+// scene.add(ambientLight);
 
 // minimal cost
 const hemisphereLight = new THREE.HemisphereLight('red', 'blue', 0.1);
 scene.add(hemisphereLight);
 
 // middle cost
-const pointLight = new THREE.PointLight(0xffffff, 2, 10);
-pointLight.position.set(2, 2, 0);
-// pointLight.lookAt(new THREE.Vector3());
-// pointLight.shadow.mapSize.set(1024, 1024);
-// scene.add(pointLight);
+const pointLight = new THREE.PointLight(0xffffff, 1, 10);
+pointLight.position.set(0, 2, -1);
+pointLight.lookAt(new THREE.Vector3());
+scene.add(pointLight);
 
 // middle cost
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.1);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
 directionalLight.position.set(1, 2, 0.5);
 scene.add(directionalLight);
 
 // hight cost
 const rectAreaLight = new THREE.RectAreaLight('yellow', 3, 1, 1);
-rectAreaLight.position.set(-1, 0, 1)
+rectAreaLight.position.set(-1, -0, 1)
 // rectAreaLight.lookAt(new THREE.Vector3())
 // scene.add(rectAreaLight);
 
 // hight cost
-const spotLight = new THREE.SpotLight('white', 0.4, 10, Math.PI* 0.3);
+const spotLight = new THREE.SpotLight('white', 2, 10, Math.PI* 0.3);
 spotLight.position.set(3, 2, 0);
 spotLight.target = torus;
 scene.add(spotLight);
@@ -318,6 +336,7 @@ const mesh = new THREE.Mesh(
     material
 );
 mesh.scale.set(0.6, 0.6, 0.6);
+mesh.position.set(-1.5, 0, 0);
 scene.add(mesh);
 
 // --debug controls UI
@@ -416,7 +435,7 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // make less pixel renderind quality, because ratio:3 is too high for GPU, but our eyes will never see the difference
 
 // Render shadows
-renderer.shadowMap.enabled = true;
+renderer.shadowMap.enabled = false;
 
 /**
  * Shadows
@@ -429,9 +448,9 @@ renderer.shadowMap.enabled = true;
  * THREE.VSMShadowMap - Less performant, more constraints, but better edges
  */
 // directional light shadows
-directionalLight.shadow.type = THREE.PCFSoftShadowMap;
+directionalLight.shadow.type = THREE.BasicShadowMap;
 
-// directionalLight.castShadow = true;
+
 directionalLight.shadow.mapSize.width = 1024;
 directionalLight.shadow.mapSize.height = 1024;
 
@@ -445,6 +464,9 @@ directionalLight.shadow.camera.far = 4;
 directionalLight.shadow.radius = 2;
 
 // Spotlight shadows
+spotLight.shadow.camera.fov = 30;
+spotLight.shadow.mapSize.width = 1024;
+spotLight.shadow.mapSize.height = 1024;
 spotLight.shadow.camera.top = 2;
 spotLight.shadow.camera.bottom = - 2;
 spotLight.shadow.camera.left = - 2;
@@ -452,8 +474,16 @@ spotLight.shadow.camera.right = 2;
 spotLight.shadow.camera.near = 1;
 spotLight.shadow.camera.far = 5;
 
+// PointLigh shadows
+pointLight.shadow.mapSize.width = 1024;
+pointLight.shadow.mapSize.height = 1024;
+pointLight.shadow.camera.near = 0.1;
+pointLight.shadow.camera.far = 3;
+// Point light don't work with .shadow.camera.fov because it's nor a perspective camera, it's render in 6 cube ways.
 
-
+// shadow casts
+directionalLight.castShadow = true;
+pointLight.castShadow = true;
 spotLight.castShadow = true;
 torus.castShadow = true;
 mesh.castShadow = true;
@@ -464,10 +494,18 @@ plane.receiveShadow = true;
 // scene.add(axesHelper);
 
 // Shadows helpers
-// const directionalLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-// scene.add(directionalLightShadowHelper);
+
+const directionalLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+directionalLightShadowHelper.visible = false;
+scene.add(directionalLightShadowHelper);
+
 const spotLightShadowHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+spotLightShadowHelper.visible = false;
 scene.add(spotLightShadowHelper);
+
+const pointLightShadowHelper = new THREE.CameraHelper(pointLight.shadow.camera);
+pointLightShadowHelper.visible = false;
+scene.add(pointLightShadowHelper)
 
 
 
@@ -494,15 +532,23 @@ const tick = () => {
         // const deltaTime = currentTime - time;
         // time = currentTime;
 
-
+    
     // Clock
     const elapsedTime = clock.getElapsedTime();
 
     // Update objects
     // sphere.rotation.y = 0.4 * elapsedTime;
+    sphere.position.z = Math.cos(elapsedTime);
+    sphere.position.x = Math.sin(elapsedTime);
+    sphere.position.y = Math.abs(Math.sin(elapsedTime * 3)); // absolut value- always positive, so 
     torus.rotation.x = 0.2 * elapsedTime;
     // plane.rotation.z = 0.4 * elapsedTime;
     torus.rotation.y = 0.4 * elapsedTime;
+
+    // Update simple shadow for sphere
+    sphereShadow.position.x = sphere.position.x;
+    sphereShadow.position.z = sphere.position.z;
+    sphereShadow.material.opacity = (1 - sphere.position.y) * 1.3;
 
     // Update controls
     controls.update(); // for damping

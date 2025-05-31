@@ -180,7 +180,7 @@ const torus = new THREE.Mesh(
 torus.position.x = 1.5;
 sphere.position.x = -1.5;
 plane.rotation.x = Math.PI / -2;
-plane.position.y = -0.5;
+plane.position.y = -0.7;
 plane.scale.set(5, 5, 5);
 scene.add(sphere);
 scene.add(plane);
@@ -192,7 +192,7 @@ scene.add(torus);
 // minimal cost
 const ambientLight = new THREE.AmbientLight(); // light comes from everywhere
 ambientLight.color = new THREE.Color(0xffffff);
-ambientLight.intensity = 0;
+ambientLight.intensity = 0.1;
 scene.add(ambientLight);
 
 // minimal cost
@@ -201,25 +201,30 @@ scene.add(hemisphereLight);
 
 // middle cost
 const pointLight = new THREE.PointLight(0xffffff, 2, 10);
-pointLight.position.set(0, 0.5, 1);
-//scene.add(pointLight);
+pointLight.position.set(2, 2, 0);
+// pointLight.lookAt(new THREE.Vector3());
+// pointLight.shadow.mapSize.set(1024, 1024);
+// scene.add(pointLight);
 
 // middle cost
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.1);
-directionalLight.position.set(1, 0.25, 0.5);
+directionalLight.position.set(1, 2, 0.5);
 scene.add(directionalLight);
 
 // hight cost
 const rectAreaLight = new THREE.RectAreaLight('yellow', 3, 1, 1);
 rectAreaLight.position.set(-1, 0, 1)
-rectAreaLight.lookAt(new THREE.Vector3())
+// rectAreaLight.lookAt(new THREE.Vector3())
 // scene.add(rectAreaLight);
 
 // hight cost
-const spotLight = new THREE.SpotLight('purple', 1, 10, Math.PI * 0.1, 0.25, 1);
-spotLight.position.set(0, 2, 3)
+const spotLight = new THREE.SpotLight('white', 0.4, 10, Math.PI* 0.3);
+spotLight.position.set(3, 2, 0);
 spotLight.target = torus;
 scene.add(spotLight);
+scene.add(spotLight.target);
+
+
 
 /**
  * Light Helpers
@@ -238,6 +243,8 @@ scene.add(spotLight);
 
 // const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight);
 // scene.add(rectAreaLightHelper);
+
+
 
 // Cursor coordinates
 const cursor = {
@@ -354,9 +361,7 @@ folders.light.add(ambientLight, 'intensity').min(0).max(10).step(0.01).name('amb
 // Rotation
 
 
-// Axes Helper
-const axesHelper = new THREE.AxesHelper();
-scene.add(axesHelper);
+
 
 
 
@@ -410,6 +415,62 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // make less pixel renderind quality, because ratio:3 is too high for GPU, but our eyes will never see the difference
 
+// Render shadows
+renderer.shadowMap.enabled = true;
+
+/**
+ * Shadows
+ */
+// only three types of light support shadows: Point, Direction, Spot
+/**
+ * THREE.BasicShadowMap - Very performant but lousy quality
+ * THREE.PCFShadowMap - Less performant but smoother edges(default)
+ * THREE.PCFSoftShadowMap - Less performant but even smoother edges
+ * THREE.VSMShadowMap - Less performant, more constraints, but better edges
+ */
+// directional light shadows
+directionalLight.shadow.type = THREE.PCFSoftShadowMap;
+
+// directionalLight.castShadow = true;
+directionalLight.shadow.mapSize.width = 1024;
+directionalLight.shadow.mapSize.height = 1024;
+
+directionalLight.shadow.camera.top = 2;
+directionalLight.shadow.camera.bottom = - 2;
+directionalLight.shadow.camera.left = - 2;
+directionalLight.shadow.camera.right = 2;
+directionalLight.shadow.camera.near = 1;
+directionalLight.shadow.camera.far = 4;
+
+directionalLight.shadow.radius = 2;
+
+// Spotlight shadows
+spotLight.shadow.camera.top = 2;
+spotLight.shadow.camera.bottom = - 2;
+spotLight.shadow.camera.left = - 2;
+spotLight.shadow.camera.right = 2;
+spotLight.shadow.camera.near = 1;
+spotLight.shadow.camera.far = 5;
+
+
+
+spotLight.castShadow = true;
+torus.castShadow = true;
+mesh.castShadow = true;
+plane.receiveShadow = true;
+
+// Axes Helper
+// const axesHelper = new THREE.AxesHelper();
+// scene.add(axesHelper);
+
+// Shadows helpers
+// const directionalLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
+// scene.add(directionalLightShadowHelper);
+const spotLightShadowHelper = new THREE.CameraHelper(spotLight.shadow.camera);
+scene.add(spotLightShadowHelper);
+
+
+
 // Controls
 const controls = new OrbitControls(camera, canvas);
 // Controls - Damping
@@ -438,7 +499,7 @@ const tick = () => {
     const elapsedTime = clock.getElapsedTime();
 
     // Update objects
-    sphere.rotation.y = 0.4 * elapsedTime;
+    // sphere.rotation.y = 0.4 * elapsedTime;
     torus.rotation.x = 0.2 * elapsedTime;
     // plane.rotation.z = 0.4 * elapsedTime;
     torus.rotation.y = 0.4 * elapsedTime;

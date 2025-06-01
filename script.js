@@ -1,43 +1,20 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import gsap from 'gsap';
-import * as dat from 'lil-gui';
+import { mainGui } from '/src/controlUI.js'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
-import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper.js'
+import { lights, lightHelpers, shadowHelpers } from '/src/lights.js'
+import { meshes } from '/src/meshes.js'
+import { axiHelper, axiArrows } from '/src/axiHelpers.js'
 // import { alphaT } from 'three/tsl';
 // import typefaceFont from 'three/examples/fonts/helvetiker_regular.typeface.json';
-
-
-/**
- * Debug
- */
-const mainGui = new dat.GUI();
-
-
-const folders = {
-    scale: mainGui.addFolder('Scale'),
-    rotation: mainGui.addFolder('Rotation'),
-    move: mainGui.addFolder('Move'),
-    color: mainGui.addFolder('Color'),
-    material: mainGui.addFolder('Material'),
-    light: mainGui.addFolder('Light')
-}
-
-for (const key in folders) {
-    folders[key].close();
-};
-
-// Object for gui
-const parametrs = {
-    spin: () => {
-        gsap.to(mesh.rotation, {duration: 1, y: mesh.rotation.y + Math.PI * 2})
-    }
-}
+// import { material } from '/src/materials.js'
 
 // Scene
 const scene = new THREE.Scene();
 
+// TODO: Refactor
 // Loaders
 const loadingManager = new THREE.LoadingManager();
 
@@ -49,7 +26,7 @@ const textureLoader = new THREE.TextureLoader(loadingManager);
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 const fontLoader = new FontLoader();
 
-
+// TODO: Refactor
 // Font
 // fontLoader.load('static/font/helvetiker_regular.typeface.json',
 //     (font) => {
@@ -95,6 +72,7 @@ const fontLoader = new FontLoader();
 //     }
 // );
 
+// TODO: Refactor
 // Texture
 const colorTexture = textureLoader.load('static/textures/door/color.jpg');
 const alphaTexture = textureLoader.load('static/textures/door/alpha.jpg');
@@ -129,68 +107,15 @@ const simpleSphereShadow = textureLoader.load('/static/textures/simpleShadow.jpg
 // colorTexture.minFilter = THREE.NearestFilter;
 // colorTexture.magFilter = THREE.NearestFilter;
 
-/**
- * Material and object
- */
-// const material = new THREE.MeshBasicMaterial({map: colorTexture});
-// const material = new THREE.MeshNormalMaterial();
-// const material = new THREE.MeshMatcapMaterial();
-// material.matcap = matcapTexture;
-// const material = new THREE.MeshDepthMaterial();
-// const material = new THREE.MeshLambertMaterial();
-// const material = new THREE.MeshPhongMaterial();
-// material.shininess = 100;
 
-// const material = new THREE.MeshToonMaterial();
-// gradientTexture.minFilter = THREE.NearestFilter;
-// gradientTexture.magFilter = THREE.NearestFilter;
-// gradientTexture.generateMipmaps = false;
-// material.gradientMap = gradientTexture;
-
-const material = new THREE.MeshStandardMaterial();
-// material.map = colorTexture;
-// material.normalMap = normalTexture;
-// material.alphaMap = alphaTexture;
-// material.aoMap = ambientOcclusionTexture;
-// material.aoMapIntensity = 1;
-// material.displacementMap = heightTexture
-// material.displacementScale = 0.05;
-// material.metalnessMap = metalnessTexture;
-// material.roughnessMap = roughnessTexture;
-// material.transparent = true;
-material.metalness = 0;
-material.roughness = 0.2;
-// material.envMap = environmentMapTexture;
-
-
-
-// Objects
-const sphere = new THREE.Mesh(
-    new THREE.SphereGeometry(0.5, 64, 64),
-    material
-)
-const plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 1, 32, 32),
-    // new THREE.MeshBasicMaterial({map: backedShadow})
-    // new THREE.MeshStandardMaterial({map: simpleSphereShadow})
-    // material
-)
-const torus = new THREE.Mesh(
-    new THREE.TorusGeometry(0.5, 0.1, 64, 128),
-    material
-)
 // -- UV
 // plane.geometry.setAttribute('uv2', new THREE.BufferAttribute(plane.geometry.attributes.uv.array, 2))
 
-
-torus.position.x = 1.5;
-sphere.position.x = 0;
-plane.position.y = -0.5;
-plane.rotation.x = Math.PI / -2;
-plane.scale.set(5, 5, 5);
-scene.add(sphere);
-scene.add(plane);
-scene.add(torus);
+// Objects
+scene.add(meshes.sphere);
+scene.add(meshes.plane);
+scene.add(meshes.torus);
+scene.add(meshes.cube)
 
 // Create sphere shadow using new plane mesh with shadow texture
 const sphereShadow = new THREE.Mesh(
@@ -202,66 +127,28 @@ const sphereShadow = new THREE.Mesh(
     })
 )
 sphereShadow.rotation.x = -Math.PI / 2;
-sphereShadow.position.y = plane.position.y + 0.01;
+sphereShadow.position.y = meshes.plane.position.y + 0.01;
 scene.add(sphereShadow);
 
 /**
  * Light
  */
 // minimal cost
-const ambientLight = new THREE.AmbientLight(); // light comes from everywhere
-ambientLight.color = new THREE.Color(0xffffff);
-ambientLight.intensity = 0.4;
-// scene.add(ambientLight);
-
-// minimal cost
-const hemisphereLight = new THREE.HemisphereLight('red', 'blue', 0.1);
-scene.add(hemisphereLight);
+scene.add(lights.ambientLight);
+scene.add(lights.hemisphereLight);
 
 // middle cost
-const pointLight = new THREE.PointLight(0xffffff, 1, 10);
-pointLight.position.set(0, 2, -1);
-pointLight.lookAt(new THREE.Vector3());
-scene.add(pointLight);
+// pointLight.lookAt(new THREE.Vector3());
+scene.add(lights.pointLight);
+scene.add(lights.directionalLight);
 
-// middle cost
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
-directionalLight.position.set(1, 2, 0.5);
-scene.add(directionalLight);
-
-// hight cost
-const rectAreaLight = new THREE.RectAreaLight('yellow', 3, 1, 1);
-rectAreaLight.position.set(-1, -0, 1)
+// hight cost)
 // rectAreaLight.lookAt(new THREE.Vector3())
 // scene.add(rectAreaLight);
 
-// hight cost
-const spotLight = new THREE.SpotLight('white', 2, 10, Math.PI* 0.3);
-spotLight.position.set(3, 2, 0);
-spotLight.target = torus;
-scene.add(spotLight);
-scene.add(spotLight.target);
-
-
-
-/**
- * Light Helpers
- */
-// const hemisphereLightHelper = new THREE.HemisphereLightHelper(hemisphereLight, 0.1);
-// scene.add(hemisphereLightHelper);
-
-// const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 0.1);
-// scene.add(directionalLightHelper);
-
-// const pointLightHelper = new THREE.PointLightHelper(pointLight, 0.1);
-// scene.add(pointLightHelper);
-
-// const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-// scene.add(spotLightHelper);
-
-// const rectAreaLightHelper = new RectAreaLightHelper(rectAreaLight);
-// scene.add(rectAreaLightHelper);
-
+lights.spotLight.target = meshes.torus;
+scene.add(lights.spotLight);
+scene.add(lights.spotLight.target);
 
 
 // Cursor coordinates
@@ -276,33 +163,8 @@ window.addEventListener('mousemove', (event) => {
 
 
 
-// CONUS XYZ
-// const group = new THREE.Group();
-// scene.add(group);
 
-// const conusZ = new THREE.Mesh(
-//     new THREE.ConeGeometry(0.01, 0.1, 4),
-//     new THREE.MeshBasicMaterial({color: 'yellow'})
-// );
-// conusZ.position.set(0, 1, 0);
-// group.add(conusZ);
-
-// const conusX = new THREE.Mesh(
-//     new THREE.ConeGeometry(0.01, 0.1, 4),
-//     new THREE.MeshBasicMaterial({color: 'red'})
-// );
-// conusX.position.set(1, 0, 0);
-// conusX.rotation.z = Math.PI * - 0.5;
-// group.add(conusX);
-
-// const conusY = new THREE.Mesh(
-//     new THREE.ConeGeometry(0.01, 0.1, 4),
-//     new THREE.MeshBasicMaterial({color: 'blue'})
-// );
-// conusY.position.set(0, 0, 1);
-// conusY.rotation.x = Math.PI * 0.5;
-// group.add(conusY);
-
+// TODO: Refactor
 // CUBE
 
         // //  // float32Array
@@ -330,59 +192,6 @@ window.addEventListener('mousemove', (event) => {
         // cube.scale.set(0.1, 0.1, 0.1);
         // cube.position.set(0.5, 0, 0.5);
         // scene.add(cube);
-
-const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(),
-    material
-);
-mesh.scale.set(0.6, 0.6, 0.6);
-mesh.position.set(-1.5, 0, 0);
-scene.add(mesh);
-
-// --debug controls UI
-// --cube rotation
-folders.rotation.add(mesh.rotation, 'x').min(-Math.PI / 2).max(Math.PI / 2).name('X rotation');
-folders.rotation.add(mesh.rotation, 'y').min(-Math.PI / 2).max(Math.PI / 2).name('Y rotation');
-folders.rotation.add(mesh.rotation, 'z').min(-Math.PI / 2).max(Math.PI / 2).name('Z rotation');
-
-// --cube move
-folders.move.add(mesh.position, 'x').min(-1).max(1).step(0.01).name('X axis');
-folders.move.add(mesh.position, 'y').min(-1).max(1).step(0.01).name('Y axis');
-folders.move.add(mesh.position, 'z').min(-1).max(1).step(0.01).name('Z axis');
-
-// --cube scale
-folders.scale.add(mesh.scale, 'x', 0.1, 3).step(0.1).name('Scale X');
-folders.scale.add(mesh.scale, 'y', 0.1, 3).step(0.1).name('Scale Y');
-folders.scale.add(mesh.scale, 'z', 0.1, 3).step(0.1).name('Scale Z');
-
-// --cube color
-folders.color.addColor(material, 'color');
-folders.color.add(material, 'opacity').min(0).max(1).step(0.01).name('visability');
-folders.color.add(material, 'visible'); // make bolean on/off 
-folders.color.add(material, 'wireframe');
-folders.color.add(parametrs, 'spin');
-
-// -- Material
-folders.material.add(material, 'metalness').min(0).max(1).step(0.001).name('metalness');
-folders.material.add(material, 'roughness').min(0).max(1).step(0.001).name('roughness');
-folders.material.add(material, 'aoMapIntensity').min(0).max(3).step(0.001).name('aoMapIntensity');
-folders.material.add(material, 'displacementScale').min(-1).max(1).step(0.0001).name('discplacement Scale');
-folders.material.add(material.normalScale, 'y').min(-10).max(10).step(0.01).name('nomalMap Intensity Y');
-folders.material.add(material.normalScale, 'x').min(-10).max(10).step(0.01).name('nomalMap Intensity X');
-
-// --light
-folders.light.add(ambientLight, 'intensity').min(0).max(10).step(0.01).name('ambientLight Intensity');
-
-// Posistion
-
-// Scale
-
-// Rotation
-
-
-
-
-
 
 // Sizes
 const sizes = {
@@ -425,7 +234,6 @@ camera.position.set(0, 0.5, 4);
 scene.add(camera);
 
 
-
 // Renderer
 const canvas = document.querySelector('.webgl');
 const renderer = new THREE.WebGLRenderer({
@@ -437,90 +245,49 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // make less pixel
 // Render shadows
 renderer.shadowMap.enabled = false;
 
-/**
- * Shadows
- */
-// only three types of light support shadows: Point, Direction, Spot
-/**
- * THREE.BasicShadowMap - Very performant but lousy quality
- * THREE.PCFShadowMap - Less performant but smoother edges(default)
- * THREE.PCFSoftShadowMap - Less performant but even smoother edges
- * THREE.VSMShadowMap - Less performant, more constraints, but better edges
- */
-// directional light shadows
-directionalLight.shadow.type = THREE.BasicShadowMap;
-
-
-directionalLight.shadow.mapSize.width = 1024;
-directionalLight.shadow.mapSize.height = 1024;
-
-directionalLight.shadow.camera.top = 2;
-directionalLight.shadow.camera.bottom = - 2;
-directionalLight.shadow.camera.left = - 2;
-directionalLight.shadow.camera.right = 2;
-directionalLight.shadow.camera.near = 1;
-directionalLight.shadow.camera.far = 4;
-
-directionalLight.shadow.radius = 2;
-
-// Spotlight shadows
-spotLight.shadow.camera.fov = 30;
-spotLight.shadow.mapSize.width = 1024;
-spotLight.shadow.mapSize.height = 1024;
-spotLight.shadow.camera.top = 2;
-spotLight.shadow.camera.bottom = - 2;
-spotLight.shadow.camera.left = - 2;
-spotLight.shadow.camera.right = 2;
-spotLight.shadow.camera.near = 1;
-spotLight.shadow.camera.far = 5;
-
-// PointLigh shadows
-pointLight.shadow.mapSize.width = 1024;
-pointLight.shadow.mapSize.height = 1024;
-pointLight.shadow.camera.near = 0.1;
-pointLight.shadow.camera.far = 3;
-// Point light don't work with .shadow.camera.fov because it's nor a perspective camera, it's render in 6 cube ways.
-
 // shadow casts
-directionalLight.castShadow = true;
-pointLight.castShadow = true;
-spotLight.castShadow = true;
-torus.castShadow = true;
-mesh.castShadow = true;
-plane.receiveShadow = true;
+lights.directionalLight.castShadow = true;
+lights.pointLight.castShadow = true;
+lights.spotLight.castShadow = true;
+meshes.torus.castShadow = true;
+meshes.cube.castShadow = true;
+meshes.plane.receiveShadow = true;
 
-// Axes Helper
-// const axesHelper = new THREE.AxesHelper();
-// scene.add(axesHelper);
+/**
+ * Axis Helper
+ */
+// scene.add(axiHelper);
+// scene.add(axiArrows);
 
-// Shadows helpers
 
-const directionalLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-directionalLightShadowHelper.visible = false;
-scene.add(directionalLightShadowHelper);
+/**
+ * Light Helpers
+ */
+// scene.add(lightHelpers.hemisphereLightHelper);
+// scene.add(lightHelpers.directionalLightHelper);
+// scene.add(lightHelpers.pointLightHelper);
+// scene.add(lightHelpers.spotLightHelper);
+// scene.add(lightHelpers.rectAreaLightHelper);
 
-const spotLightShadowHelper = new THREE.CameraHelper(spotLight.shadow.camera);
-spotLightShadowHelper.visible = false;
-scene.add(spotLightShadowHelper);
-
-const pointLightShadowHelper = new THREE.CameraHelper(pointLight.shadow.camera);
-pointLightShadowHelper.visible = false;
-scene.add(pointLightShadowHelper)
-
+/**
+ * Shadow Helpers
+ */
+// scene.add(shadowHelpers.directionalLightShadowHelper);
+// scene.add(shadowHelpers.spotLightShadowHelper);
+// scene.add(shadowHelpers.pointLightShadowHelper)
 
 
 // Controls
 const controls = new OrbitControls(camera, canvas);
+
 // Controls - Damping
 controls.enableDamping = true;
-
-
 
 // FPS 
 let time = Date.now();
 const clock = new THREE.Clock();
 
-// // GSAP
+// GSAP
 // gsap.to(cube1.position, { duration: 1, delay: 1, x: 2});
 
 // Animations
@@ -537,18 +304,16 @@ const tick = () => {
     const elapsedTime = clock.getElapsedTime();
 
     // Update objects
-    // sphere.rotation.y = 0.4 * elapsedTime;
-    sphere.position.z = Math.cos(elapsedTime);
-    sphere.position.x = Math.sin(elapsedTime);
-    sphere.position.y = Math.abs(Math.sin(elapsedTime * 3)); // absolut value- always positive, so 
-    torus.rotation.x = 0.2 * elapsedTime;
-    // plane.rotation.z = 0.4 * elapsedTime;
-    torus.rotation.y = 0.4 * elapsedTime;
+    meshes.sphere.position.z = Math.cos(elapsedTime);
+    meshes.sphere.position.x = Math.sin(elapsedTime);
+    meshes.sphere.position.y = Math.abs(Math.sin(elapsedTime * 3)); // absolut value- always positive, so 
+    meshes.torus.rotation.x = 0.2 * elapsedTime;
+    meshes.torus.rotation.y = 0.4 * elapsedTime;
 
     // Update simple shadow for sphere
-    sphereShadow.position.x = sphere.position.x;
-    sphereShadow.position.z = sphere.position.z;
-    sphereShadow.material.opacity = (1 - sphere.position.y) * 1.3;
+    sphereShadow.position.x = meshes.sphere.position.x;
+    sphereShadow.position.z = meshes.sphere.position.z;
+    sphereShadow.material.opacity = (1 - meshes.sphere.position.y) * 1.3;
 
     // Update controls
     controls.update(); // for damping

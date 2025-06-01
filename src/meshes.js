@@ -159,10 +159,10 @@ house.add(bush1, bush2, bush3, bush4);
 export const rocks = new THREE.Group();
 
 
-const rockGeometry = new THREE.BoxGeometry(0.5, 0.3, 0.2);
+const rockGeometry = new THREE.SphereGeometry(0.2, 4, 4);
 const rockMaterial = new THREE.MeshStandardMaterial({color: 'white'});
 
-for(let i = 0; i < 100; i++) {
+for(let i = 0; i < 150; i++) {
     
     const angle = Math.random() * (Math.PI * 2); // выставить камни рандомно по окружностикруга, 
     const radius = 3 + Math.random() * 4; // создает широкую окружность, типа баранки
@@ -171,13 +171,12 @@ for(let i = 0; i < 100; i++) {
     
     const rock = new THREE.Mesh(rockGeometry, rockMaterial);
     const random = Math.random() - 0.5;
-    rock.position.set(x, 0.2 / 2, z);
+    rock.position.set(x, 0.1 / 2, z);
     rock.rotation.y = random * Math.PI * 2;
     rock.rotation.z = random * Math.PI * 2;
     rock.rotation.x = random * Math.PI * 2;
-    rock.scale.set(random * 3, random * 3, random * 3);
+    rock.scale.set(random * 4, random * 4, random * 4);
     rocks.add(rock);
-
 }
 
 

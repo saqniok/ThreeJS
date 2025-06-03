@@ -91,19 +91,20 @@ scene.add(rocks);
  */
 // minimal cost
 scene.add(lights.ambientLight);
-scene.add(lights.hemisphereLight);
+// scene.add(lights.hemisphereLight);
 
 // middle cost
 // pointLight.lookAt(new THREE.Vector3());
-scene.add(lights.pointLight);
+// scene.add(lights.pointLight);
 scene.add(lights.directionalLight);
+
 
 // hight cost)
 // rectAreaLight.lookAt(new THREE.Vector3())
 // scene.add(rectAreaLight);
 
-lights.spotLight.target = meshes.torus;
-scene.add(lights.spotLight);
+// lights.spotLight.target = meshes.torus;
+// scene.add(lights.spotLight);
 // scene.add(lights.spotLight.target);
 
 
@@ -143,14 +144,19 @@ window.addEventListener('resize', () => {
 
 })
 
-// Fullscreen
+/**
+ * Fullscreen
+ */
+
 window.addEventListener('dblclick', (event) => 
 {
     if (!event.ctrlKey) return;
     if(!document.fullscreenElement) { canvas.requestFullscreen(); } else document.exitFullscreen();
 });
 
-// Camera
+/**
+ * Camera
+ */
 const camera = new THREE.PerspectiveCamera(60, sizes.width / sizes.height, 0.1, 100);
 
 // // ORTHOGRAPIC Camera
@@ -160,19 +166,34 @@ const camera = new THREE.PerspectiveCamera(60, sizes.width / sizes.height, 0.1, 
 camera.position.set(2, 2, 8);
 scene.add(camera);
 
+/**
+ * Renderer
+ */
 
-// Renderer
 const canvas = document.querySelector('.webgl');
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // make less pixel renderind quality, because ratio:3 is too high for GPU, but our eyes will never see the difference
+renderer.setClearColor('purple');
 
-// Render shadows
+/**
+ * Fog - туман
+ */
+const fog = new THREE.Fog('purple', 1, 15);
+scene.fog = fog;
+
+
+/**
+ * Render shadows
+ */
 renderer.shadowMap.enabled = true;
 
-// shadow casts
+
+/**
+ * Shadow casts
+ */
 // lights.directionalLight.castShadow = true;
 // lights.pointLight.castShadow = true;
 // lights.spotLight.castShadow = true;

@@ -18,15 +18,15 @@ export const fontLoader = new FontLoader();
  * Textures
  */
 
-const colorTexture = textureLoader.load('static/textures/door/color.jpg');
-const alphaTexture = textureLoader.load('static/textures/door/alpha.jpg');
-const ambientOcclusionTexture = textureLoader.load('static/textures/door/ambientOcclusion.jpg');
-const heightTexture = textureLoader.load('static/textures/door/height.jpg');
-const metalnessTexture = textureLoader.load('static/textures/door/metalness.jpg');
-const normalTexture = textureLoader.load('static/textures/door/normal.jpg');
-const roughnessTexture = textureLoader.load('static/textures/door/roughness.jpg');
-const matcapTexture = textureLoader.load('/static/textures/matcaps/3.png');
-const gradientTexture = textureLoader.load('/static/textures/gradients/5.jpg');
+const doorColorTexture = textureLoader.load('../static/textures/door/color.jpg');
+const doorAlphaTexture = textureLoader.load('static/textures/door/alpha.jpg');
+const doorAmbientOcclusionTexture = textureLoader.load('../static/textures/door/ambientOcclusion.jpg');
+const doorHeightTexture = textureLoader.load('../static/textures/door/height.jpg');
+const doorMetalnessTexture = textureLoader.load('../static/textures/door/metalness.jpg');
+const doorNormalTexture = textureLoader.load('../static/textures/door/normal.jpg');
+const doorRoughnessTexture = textureLoader.load('../static/textures/door/roughness.jpg');
+const matcapTexture = textureLoader.load('../static/textures/matcaps/3.png');
+const gradientTexture = textureLoader.load('../static/textures/gradients/5.jpg');
 
 // colorTexture.repeat.set(3, 2);
 // colorTexture.wrapS = THREE.RepeatWrapping;
@@ -52,18 +52,91 @@ const environmentMapTexture = cubeTextureLoader.load([
     'static/textures/environmentMaps/1/nz.jpg'
 ])
 
+/**
+ * Wall textures
+ */
+const wallColorTexture = textureLoader.load(
+    '/static/textures/stone_bricks_wall_07_1k/stone_bricks_wall_07_baseColor_1k.png');
+const wallNormalTexture = textureLoader.load(
+    '/static/textures/stone_bricks_wall_07_1k/stone_bricks_wall_07_normal_gl_1k.png');
+const wallRoughnessTexture = textureLoader.load(
+    '/static/textures/stone_bricks_wall_07_1k/stone_bricks_wall_07_roughness_1k.png')
+const wallMetallicTexture = textureLoader.load(
+    '/static/textures/stone_bricks_wall_07_1k//stone_bricks_wall_07_metallic_1k.png');
+const wallHeightTexture = textureLoader.load(
+    '/static/textures/stone_bricks_wall_07_1k/stone_bricks_wall_07_height_1k.png');
+const wallaoMapTexture = textureLoader.load(
+    '/static/textures/stone_bricks_wall_07_1k/stone_bricks_wall_07_ambientOcclusion_1k.png');
+
+/**
+ * grass textures
+ */
+const grassColorTexture = textureLoader.load(
+    '/static/textures/grass_with_rocks_01_1k/grass_with_rocks_01_color_1k.png');
+const grassNormalTexture = textureLoader.load(
+    '/static/textures/grass_with_rocks_01_1k/grass_with_rocks_01_normal_gl_1k.png');
+const grassRoughnessTexture = textureLoader.load(
+    '/static/textures/grass_with_rocks_01_1k/grass_with_rocks_01_roughness_1k.png')
+const grassHeightTexture = textureLoader.load(
+    '/static/textures/grass_with_rocks_01_1k/grass_with_rocks_01_height_1k.png');
+const grassaoMapTexture = textureLoader.load(
+    '/static/textures/grass_with_rocks_01_1k/grass_with_rocks_01_ambientocclusion_1k.png');
+
+
+/**
+ * Rocks textures
+ */
+const rockColorTexture = textureLoader.load(
+    '/static/textures/ground_06_1k/ground_06_baseColor_1k.png');
+const rockNormalTexture = textureLoader.load(
+    '/static/textures/ground_06_1k/ground_06_normal_dx_1k.png');
+const rockRoughnesTexture = textureLoader.load(
+    '/static/textures/ground_06_1k/ground_06_roughness_1k.png')
+const rockHeightTexture = textureLoader.load(
+    '/static/textures/ground_06_1k/ground_06_height_1k.png');
+const rockaoMapTexture = textureLoader.load(
+    '/static/textures/ground_06_1k/ground_06_ambientOcclusion_1k.png');
+
+
+
+
 export const textures = {
-    colorTexture,
-    alphaTexture,
-    ambientOcclusionTexture,
-    heightTexture,
-    metalnessTexture,
-    normalTexture,
-    roughnessTexture,
+    doorColorTexture,
+    doorAlphaTexture,
+    doorAmbientOcclusionTexture,
+    doorHeightTexture,
+    doorMetalnessTexture,
+    doorNormalTexture,
+    doorRoughnessTexture,
     matcapTexture,
     gradientTexture,
     backedShadow,
     simpleSphereShadow,
     environmentMapTexture
+}
+
+export const wallTextures = {
+    wallColorTexture,
+    wallNormalTexture,
+    wallRoughnessTexture,
+    wallMetallicTexture,
+    wallHeightTexture,
+    wallaoMapTexture
+}
+
+export const grassTextures = {
+    grassColorTexture,
+    grassNormalTexture,
+    grassHeightTexture,
+    grassRoughnessTexture,
+    grassaoMapTexture
+}
+
+export const rocksTextures = {
+    rockColorTexture,
+    rockNormalTexture,
+    rockHeightTexture,
+    rockRoughnesTexture,
+    rockaoMapTexture
 }
 

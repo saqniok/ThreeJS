@@ -3,20 +3,20 @@ import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHel
 
 // minimal cost
 const ambientLight = new THREE.AmbientLight(); // light comes from everywhere
-ambientLight.color = new THREE.Color(0xffffff);
-ambientLight.intensity = 0.1;
+ambientLight.color = new THREE.Color(0xbc6262);
+ambientLight.intensity = 2;
 
  // minimal cost
 const hemisphereLight = new THREE.HemisphereLight('red', 'blue', 0.1);
-// scene.add(hemisphereLight);
 
 // // middle cost
 const pointLight = new THREE.PointLight(0xffffff, 1, 10);
 pointLight.position.set(0, 2, -1);
 
 // middle cost
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
+const directionalLight = new THREE.DirectionalLight('#8282ce', 0.2);
 directionalLight.position.set(1, 2, 0.5);
+directionalLight.intensity = 2;
 
 // hight cost
 const rectAreaLight = new THREE.RectAreaLight('yellow', 3, 1, 1);
@@ -26,13 +26,17 @@ rectAreaLight.position.set(-1, -0, 1)
 const spotLight = new THREE.SpotLight('white', 2, 10, Math.PI* 0.3);
 spotLight.position.set(3, 2, 0);
 
+const doorLight = new THREE.PointLight('white', 1, 7);
+doorLight.position.set(0, 1.2, 1.2);
+
 export const lights = {
     directionalLight,
     pointLight,
     rectAreaLight,
     spotLight,
     ambientLight,
-    hemisphereLight
+    hemisphereLight,
+    doorLight
 }
 /**
  *  Shadows

@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { material } from './materials'
+import { lights } from './lights.js'
+import { textures, wallTextures, grassTextures, rocksTextures } from './textures.js'
 
 // Objects
 const sphere = new THREE.Mesh(
@@ -9,11 +11,21 @@ const sphere = new THREE.Mesh(
 sphere.position.x = 0;
 
 const plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 1, 32, 32),
-    // new THREE.MeshBasicMaterial({map: backedShadow})
-    // new THREE.MeshStandardMaterial({map: simpleSphereShadow})
-    material
+    new THREE.PlaneGeometry(1, 1, 100, 100),
+    new THREE.MeshStandardMaterial({
+        map: grassTextures.grassColorTexture,
+        normalMap: grassTextures.grassNormalTexture,
+        roughnessMap: grassTextures.grassRoughnessTexture,
+        aoMap: grassTextures.grassaoMapTexture,
+        transparent: true,
+        displacementMap: grassTextures.grassHeightTexture,
+        displacementScale: 0.024
+    })
 )
+plane.geometry.setAttribute(
+    'uv2',
+    new THREE.Float32BufferAttribute(plane.geometry.attributes.uv.array, 2)
+ )
 plane.rotation.x = Math.PI / -2;
 plane.scale.set(15, 15, 15);
 
@@ -78,11 +90,50 @@ export const house = new THREE.Group();
 const wallHeight = 1.3;
 const wallWidth = 2.5;
 const walls = new THREE.Mesh(
-    new THREE.BoxGeometry(3, wallHeight, wallWidth),
-    new THREE.MeshStandardMaterial({color: 'red'})
+    new THREE.BoxGeometry(3, wallHeight, wallWidth, 100, 100, 100),
+    new THREE.MeshStandardMaterial({
+        map: wallTextures.wallColorTexture,
+        normalMap: wallTextures.wallNormalTexture,
+        transparent: true,
+        roughnessMap: wallTextures.wallRoughnessTexture,
+        metalnessMap: wallTextures.wallMetallicTexture,
+        aoMap: wallTextures.wallaoMapTexture,
+        // displacementMap: wallTextures.wallHeightTexture, for box geometry it's not working, we need import 3D model with siuted corners
+        // displacementScale: 0.051, // or create 4 plane textures and use them as walls
+    })
 )
 walls.position.y = wallHeight / 2;
 house.add(walls);
+const repeatX = 4;
+const repeatY = 2;
+const wallTextureList = [
+    wallTextures.wallColorTexture,
+    wallTextures.wallHeightTexture,
+    wallTextures.wallMetallicTexture,
+    wallTextures.wallNormalTexture,
+    wallTextures.wallRoughnessTexture,
+    wallTextures.wallaoMapTexture
+];
+
+const grassTextureList = [
+    grassTextures.grassColorTexture,
+    grassTextures.grassNormalTexture,
+    grassTextures.grassRoughnessTexture,
+    grassTextures.grassHeightTexture,
+    grassTextures.grassaoMapTexture
+]
+
+wallTextureList.forEach(texture => {
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(repeatX, repeatY);
+})
+
+grassTextureList.forEach(texture => {
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(4, 4);
+})
 
 // roof
 const roofHeight = 1;
@@ -95,14 +146,31 @@ roof.rotation.y = Math.PI / 4
 house.add(roof);
 
 // Door
+const doorVertexCount = 100;
 const doorHeight = 1;
 const doorWidth = 0.8;
 const door = new THREE.Mesh(
-    new THREE.PlaneGeometry(doorWidth, doorHeight),
-    new THREE.MeshStandardMaterial({color: 'black'})
+    new THREE.PlaneGeometry(doorWidth, doorHeight, doorVertexCount, doorVertexCount),
+    new THREE.MeshStandardMaterial({
+        map: textures.doorColorTexture,
+        transparent: true,
+        alphaMap: textures.doorAlphaTexture,
+        normalMap: textures.doorNormalTexture,
+        aoMap: textures.doorAmbientOcclusionTexture,
+        roughnessMap: textures.doorRoughnessTexture,
+        metalnessMap: textures.doorMetalnessTexture,
+        displacementMap: textures.doorHeightTexture,
+        displacementScale: 0.05 // too see result we must have more poligons in mesh, because it plays with vertex
+    })
 )
-door.position.z = wallWidth / 2 + 0.01;
-door.position.y = doorHeight / 2;
+// we need to add a uv2 attribute to the door geometry for Ambient Occlusion 
+door.geometry.setAttribute(
+    'uv2',
+    new THREE.Float32BufferAttribute(door.geometry.attributes.uv.array, 2)
+ )
+door.position.z = wallWidth / 2;
+door.position.y = doorHeight / 1.8;
+door.scale.set(1.5, 1.2, 1.5)
 house.add(door);
 
 // Shapes/Hearts
@@ -160,7 +228,21 @@ export const rocks = new THREE.Group();
 
 
 const rockGeometry = new THREE.SphereGeometry(0.2, 4, 4);
-const rockMaterial = new THREE.MeshStandardMaterial({color: 'white'});
+const rockMaterial = new THREE.MeshStandardMaterial({
+    map: rocksTextures.rockColorTexture,
+    normalMap: rocksTextures.rockNormalTexture,
+    roughnessMap: rocksTextures.rockRoughnesTexture,
+    aoMap: rocksTextures.rockaoMapTexture, // for aoMap we need uv
+    transparent: true,
+    displacementMap: rocksTextures.rockHeightTexture,
+    displacementScale: 0.06
+});
+
+door.geometry.setAttribute(
+    'uv2',
+    new THREE.Float32BufferAttribute(door.geometry.attributes.uv.array, 2)
+ )
+
 
 for(let i = 0; i < 150; i++) {
     
@@ -171,12 +253,19 @@ for(let i = 0; i < 150; i++) {
     
     const rock = new THREE.Mesh(rockGeometry, rockMaterial);
     const random = Math.random() - 0.5;
-    rock.position.set(x, 0.1 / 2, z);
-    rock.rotation.y = random * Math.PI * 2;
-    rock.rotation.z = random * Math.PI * 2;
-    rock.rotation.x = random * Math.PI * 2;
+    rock.position.set(x, 0.2 / 2, z);
+    rock.rotation.y = random * Math.PI * 4;
+    rock.rotation.z = random * Math.PI * 4;
+    rock.rotation.x = random * Math.PI * 4;
     rock.scale.set(random * 4, random * 4, random * 4);
     rocks.add(rock);
 }
+
+
+
+/**
+ * Lights for house
+ */
+house.add(lights.doorLight)
 
 

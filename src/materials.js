@@ -30,5 +30,5 @@ export const material = new THREE.MeshStandardMaterial();
 // material.roughnessMap = roughnessTexture;
 // material.transparent = true;
 material.metalness = 0;
-material.roughness = 0.2;
+material.roughness = 0.6;
 // material.envMap = environmentMapTexture;

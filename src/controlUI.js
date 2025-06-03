@@ -55,3 +55,6 @@ folders.material.add(material.normalScale, 'x').min(-10).max(10).step(0.01).name
 
 // // --light
 folders.light.add(lights.ambientLight, 'intensity').min(0).max(10).step(0.01).name('ambientLight Intensity');
+folders.light.addColor(lights.ambientLight, 'color');
+folders.light.add(lights.directionalLight, 'intensity').min(0).max(10).step(0.01).name('directionalLight Intensity');
+folders.light.addColor(lights.directionalLight, 'color');

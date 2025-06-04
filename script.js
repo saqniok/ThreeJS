@@ -1,13 +1,13 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import gsap from 'gsap';
-import { mainGui } from '/src/controlUI.js'
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
-import { lights, lightHelpers, shadowHelpers } from '/src/lights.js'
+// import gsap from 'gsap';
+// import { mainGui } from '/src/controlUI.js'
+// import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+// import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
+import { lights, lightHelpers, shadowHelpers, ghost1, ghost2, ghost3 } from '/src/lights.js'
 import { meshes, house, rocks } from '/src/meshes.js'
-import { axiHelper, axiArrows } from '/src/axiHelpers.js'
-import { textures, fontLoader} from '/src/textures.js'
+// import { axiHelper, axiArrows } from '/src/axiHelpers.js'
+// import { textures, fontLoader} from '/src/textures.js'
 // import { alphaT } from 'three/tsl';
 // import typefaceFont from 'three/examples/fonts/helvetiker_regular.typeface.json';
 // import { material } from '/src/materials.js'
@@ -176,12 +176,12 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // make less pixel renderind quality, because ratio:3 is too high for GPU, but our eyes will never see the difference
-renderer.setClearColor('purple');
+renderer.setClearColor('pink');
 
 /**
  * Fog - туман
  */
-const fog = new THREE.Fog('purple', 1, 15);
+const fog = new THREE.Fog('pink', 1, 20);
 scene.fog = fog;
 
 
@@ -189,17 +189,22 @@ scene.fog = fog;
  * Render shadows
  */
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
 
 
 /**
  * Shadow casts
  */
-// lights.directionalLight.castShadow = true;
+lights.directionalLight.castShadow = true;
 // lights.pointLight.castShadow = true;
 // lights.spotLight.castShadow = true;
 // meshes.torus.castShadow = true;
 // meshes.cube.castShadow = true;
 // meshes.plane.receiveShadow = true;
+
+ghost1.castShadow = true;
+ghost2.castShadow = true;
+ghost3.castShadow = true;
 
 /**
  * Axis Helper
@@ -223,6 +228,13 @@ renderer.shadowMap.enabled = true;
 // scene.add(shadowHelpers.directionalLightShadowHelper);
 // scene.add(shadowHelpers.spotLightShadowHelper);
 // scene.add(shadowHelpers.pointLightShadowHelper)
+
+/**
+ * Ghosts
+ */
+scene.add(ghost1);
+scene.add(ghost2);
+scene.add(ghost3);
 
 
 // Controls
@@ -250,6 +262,22 @@ const tick = () => {
     
     // Clock
     const elapsedTime = clock.getElapsedTime();
+
+    // Update ghosts
+    const ghost1Angle = elapsedTime * 0.5;
+    ghost1.position.x = Math.cos(ghost1Angle) * 4;
+    ghost1.position.z = Math.sin(ghost1Angle) * 4;
+    ghost1.position.y = Math.abs(Math.sin(ghost1Angle));
+
+    const ghost2Angle = elapsedTime * 0.3;
+    ghost2.position.x = Math.cos(-ghost2Angle) * 4;
+    ghost2.position.z = Math.sin(-ghost2Angle) * 4;
+    ghost2.position.y = Math.abs(Math.sin(ghost2Angle));
+
+    const ghost3Angle = elapsedTime * 0.7;
+    ghost3.position.x = Math.cos(-ghost3Angle) * 4;
+    ghost3.position.z = Math.sin(-ghost3Angle) * 4;
+    ghost3.position.y = Math.abs(Math.sin(ghost3Angle));
 
     // Update objects
     // meshes.sphere.position.z = Math.cos(elapsedTime);

@@ -1,7 +1,14 @@
 import * as THREE from 'three';
 import { material } from './materials'
 import { lights } from './lights.js'
-import { textures, wallTextures, grassTextures, rocksTextures } from './textures.js'
+import { 
+    textures,
+    wallTextures, 
+    grassTextures, 
+    rocksTextures, 
+    roofTextures,
+    bushTextures
+ } from './textures.js'
 
 // Objects
 const sphere = new THREE.Mesh(
@@ -27,6 +34,7 @@ plane.geometry.setAttribute(
     new THREE.Float32BufferAttribute(plane.geometry.attributes.uv.array, 2)
  )
 plane.rotation.x = Math.PI / -2;
+plane.position.y = -0.1;
 plane.scale.set(15, 15, 15);
 
 const torus = new THREE.Mesh(
@@ -103,6 +111,7 @@ const walls = new THREE.Mesh(
     })
 )
 walls.position.y = wallHeight / 2;
+walls.castShadow = true;
 house.add(walls);
 const repeatX = 4;
 const repeatY = 2;
@@ -123,6 +132,8 @@ const grassTextureList = [
     grassTextures.grassaoMapTexture
 ]
 
+
+
 wallTextureList.forEach(texture => {
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
@@ -135,15 +146,44 @@ grassTextureList.forEach(texture => {
     texture.repeat.set(4, 4);
 })
 
+
+
 // roof
 const roofHeight = 1;
 const roof = new THREE.Mesh(
     new THREE.ConeGeometry(2.5, roofHeight, 4),
-    new THREE.MeshStandardMaterial({color: 'blue'})
+    new THREE.MeshStandardMaterial({
+        map: roofTextures.roofColorTexture,
+        normalMap: roofTextures.roofNormalTexture,
+        roughnessMap: roofTextures.roofRoughnesTexture,
+        aoMap: roofTextures.roofHeightTexture
+    })
 )
+
+roof.geometry.setAttribute(
+    'uv2',
+    new THREE.Float32BufferAttribute(roof.geometry.attributes.uv.array, 2)
+ )
 roof.position.y = roofHeight / 2 + wallHeight;
 roof.rotation.y = Math.PI / 4
+roofTextures.roofColorTexture.wrapS = THREE.RepeatWrapping;
+roofTextures.roofColorTexture.wrapT = THREE.RepeatWrapping;
+roofTextures.roofColorTexture.repeat.set(5, 5);
 house.add(roof);
+
+const roofTextureList = [
+    roofTextures.roofColorTexture,
+    roofTextures.roofNormalTexture,
+    roofTextures.roofRoughnesTexture,
+    roofTextures.roofHeightTexture,
+    roofTextures.roofaoMapTexture
+]
+
+roofTextureList.forEach(texture => {
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(4, 4);
+})
 
 // Door
 const doorVertexCount = 100;
@@ -204,7 +244,17 @@ house.add(heart);
 
 // Bush
 const bushGeometry = new THREE.SphereGeometry(1, 16, 16);
-const bushMaterial = new THREE.MeshStandardMaterial({color: 'green'});
+const bushMaterial = new THREE.MeshStandardMaterial({
+    map: bushTextures.bushColorTexture,
+    normalMap: bushTextures.bushNormalTexture,
+    aoMap: bushTextures.bushaoMapTexture,
+    roughnessMap: bushTextures.bushRoughnesTexture,
+    // displacementMap: bushTextures.bushHeightTexture,
+    // displacementScale: 0.05,
+    transparent: true,
+    
+
+});
 const bush1 = new THREE.Mesh(bushGeometry, bushMaterial);
 const bush2 = new THREE.Mesh(bushGeometry, bushMaterial);
 const bush3 = new THREE.Mesh(bushGeometry, bushMaterial);
@@ -238,11 +288,6 @@ const rockMaterial = new THREE.MeshStandardMaterial({
     displacementScale: 0.06
 });
 
-door.geometry.setAttribute(
-    'uv2',
-    new THREE.Float32BufferAttribute(door.geometry.attributes.uv.array, 2)
- )
-
 
 for(let i = 0; i < 150; i++) {
     
@@ -258,6 +303,7 @@ for(let i = 0; i < 150; i++) {
     rock.rotation.z = random * Math.PI * 4;
     rock.rotation.x = random * Math.PI * 4;
     rock.scale.set(random * 4, random * 4, random * 4);
+    rock.castShadow = true;
     rocks.add(rock);
 }
 
@@ -266,6 +312,11 @@ for(let i = 0; i < 150; i++) {
 /**
  * Lights for house
  */
+bush1.castShadow = true;
+bush2.castShadow = true;
+bush3.castShadow = true;
+bush4.castShadow = true;
+plane.receiveShadow = true;
 house.add(lights.doorLight)
 
 

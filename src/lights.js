@@ -3,8 +3,8 @@ import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHel
 
 // minimal cost
 const ambientLight = new THREE.AmbientLight(); // light comes from everywhere
-ambientLight.color = new THREE.Color(0xbc6262);
-ambientLight.intensity = 2;
+ambientLight.color = new THREE.Color(0xc240c4);
+ambientLight.intensity = 1;
 
  // minimal cost
 const hemisphereLight = new THREE.HemisphereLight('red', 'blue', 0.1);
@@ -12,11 +12,12 @@ const hemisphereLight = new THREE.HemisphereLight('red', 'blue', 0.1);
 // // middle cost
 const pointLight = new THREE.PointLight(0xffffff, 1, 10);
 pointLight.position.set(0, 2, -1);
+pointLight.intensity = 4;
 
 // middle cost
-const directionalLight = new THREE.DirectionalLight('#8282ce', 0.2);
+const directionalLight = new THREE.DirectionalLight('red', 0.2);
 directionalLight.position.set(1, 2, 0.5);
-directionalLight.intensity = 2;
+directionalLight.intensity = 0.8;
 
 // hight cost
 const rectAreaLight = new THREE.RectAreaLight('yellow', 3, 1, 1);
@@ -119,3 +120,32 @@ export const shadowHelpers = {
     spotLightShadowHelper,
     pointLightShadowHelper
 }
+
+/**
+ * Ghosts
+ */
+export const ghost1 = new THREE.PointLight('#ff00ff', 3, 4);
+ghost1.position.set(0, 1, 4);
+
+export const ghost2 = new THREE.PointLight('#00ffff', 3, 4);
+ghost2.position.set(-4, 1, -2);
+
+export const ghost3 = new THREE.PointLight('#ffff00', 3, 4);
+ghost3.position.set(4, 1, -2);
+
+doorLight.shadow.mapSize.width = 256;
+doorLight.shadow.mapSize.height = 256;
+doorLight.shadow.camera.far = 7;
+
+ghost1.shadow.mapSize.width = 256;
+ghost1.shadow.mapSize.height = 256;
+ghost1.shadow.camera.far = 7;
+
+
+ghost2.shadow.mapSize.width = 256;
+ghost2.shadow.mapSize.height = 256;
+ghost2.shadow.camera.far = 7;
+
+ghost3.shadow.mapSize.width = 256;
+ghost3.shadow.mapSize.height = 256;
+ghost3.shadow.camera.far = 7;

@@ -91,7 +91,7 @@ const rockColorTexture = textureLoader.load(
 const rockNormalTexture = textureLoader.load(
     '/static/textures/ground_06_1k/ground_06_normal_dx_1k.png');
 const rockRoughnesTexture = textureLoader.load(
-    '/static/textures/ground_06_1k/ground_06_roughness_1k.png')
+    '/static/textures/ground_06_1k/ground_06_roughness_1k.png');
 const rockHeightTexture = textureLoader.load(
     '/static/textures/ground_06_1k/ground_06_height_1k.png');
 const rockaoMapTexture = textureLoader.load(
@@ -105,7 +105,7 @@ const roofColorTexture = textureLoader.load(
 const roofNormalTexture = textureLoader.load(
     '/static/textures/wood_planks_09_1k/wood_planks_09_normal_dx_1k.png');
 const roofRoughnesTexture = textureLoader.load(
-    '/static/textures/wood_planks_09_1k/wood_planks_09_roughness_1k.png')
+    '/static/textures/wood_planks_09_1k/wood_planks_09_roughness_1k.png');
 const roofHeightTexture = textureLoader.load(
     '/static/textures/wood_planks_09_1k/wood_planks_09_height_1k.png');
 const roofaoMapTexture = textureLoader.load(
@@ -119,7 +119,7 @@ const bushColorTexture = textureLoader.load(
 const bushNormalTexture = textureLoader.load(
     '/static/textures/moss_ground_02_1k/moss_groud_02_Normal_dx_1k.png');
 const bushRoughnesTexture = textureLoader.load(
-    '/static/textures/moss_ground_02_1k/moss_groud_02_Roughness_1k.png')
+    '/static/textures/moss_ground_02_1k/moss_groud_02_Roughness_1k.png');
 const bushHeightTexture = textureLoader.load(
     '/static/textures/moss_ground_02_1k/moss_groud_02_Height_1k.png');
 const bushaoMapTexture = textureLoader.load(

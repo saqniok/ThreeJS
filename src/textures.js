@@ -126,6 +126,11 @@ const bushaoMapTexture = textureLoader.load(
     '/static/textures/moss_ground_02_1k/moss_groud_02_Ambient_Occlusion_1k.png');
 
 
+/**
+ * Particles textures
+ */
+const particlesColorTexture = textureLoader.load('../static/textures/particles/4.png');
+
 export const bushTextures = {
     bushColorTexture,
     bushNormalTexture,
@@ -155,6 +160,7 @@ export const textures = {
     backedShadow,
     simpleSphereShadow,
     environmentMapTexture
+    
 }
 
 export const wallTextures = {
@@ -180,5 +186,9 @@ export const rocksTextures = {
     rockHeightTexture,
     rockRoughnesTexture,
     rockaoMapTexture
+}
+
+export const particlesTextures = {
+    particlesColorTexture
 }
 

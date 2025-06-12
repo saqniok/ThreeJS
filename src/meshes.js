@@ -7,7 +7,8 @@ import {
     grassTextures, 
     rocksTextures, 
     roofTextures,
-    bushTextures
+    bushTextures,
+    particlesTextures
  } from './textures.js'
 
 // Objects
@@ -308,7 +309,6 @@ for(let i = 0; i < 150; i++) {
 }
 
 
-
 /**
  * Lights for house
  */
@@ -320,3 +320,73 @@ plane.receiveShadow = true;
 house.add(lights.doorLight)
 
 
+/**
+ * Particles
+ */
+
+// Geometry
+// const particlesGeometry = new THREE.SphereGeometry(1, 32, 32);
+// // const positionAttr = particlesGeometry.getAttribute('position');
+// // const positions = positionAttr.array;
+// // const newPositions = [];
+
+// // for (let i = 0; i < positions.length; i += 3) {
+// //     const x = positions[i];
+// //     const y = positions[i + 1];
+// //     const z = positions[i + 2];
+
+// //     if (y > 0) {
+// //         newPositions.push(x, y, z);
+// //     }
+// // }
+
+// // const filteredGeometry = new THREE.BufferGeometry();
+// // filteredGeometry.setAttribute('position', new THREE.Float32BufferAttribute(newPositions, 3));
+
+// // Material
+// const particlesMaterial = new THREE.PointsMaterial({
+//     color: 'black',
+//     size: 0.1,
+//     sizeAttenuation: true // if Particle is far away it's size is become smaller
+// })
+
+// // Points
+// const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+// particles.scale.set(8, 3, 8);
+// house.add(particles);
+export const particlesGeometry = new THREE.BufferGeometry();
+export const particlesCount = 20000;
+
+const position = new Float32Array(particlesCount * 3);
+const colors = new Float32Array(particlesCount * 3);
+
+for( let i = 0; i < particlesCount * 3; i++) {
+    position[i] = (Math.random() - 0.5) * 10;
+    colors[i] = Math.random();
+}
+
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(position, 3));
+particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+// Material
+const particlesMaterial = new THREE.PointsMaterial();
+particlesMaterial.size = 1;
+particlesMaterial.sizeAttenuation = true;
+
+// particlesMaterial.color = new THREE.Color('yellow');
+particlesMaterial.alphaMap = particlesTextures.particlesColorTexture;
+particlesMaterial.transparent = true;
+// particlesMaterial.depthTest = false; // прикольный эффект, надо оставить для CV
+particlesMaterial.depthWrite = false;
+// particlesMaterial.alphaTest = 0.001;
+particlesMaterial.blending = THREE.AdditiveBlending; // если приксель рисуется на пикселе, то он становится ярче
+particlesMaterial.vertexColors = true;
+
+// Color
+
+
+// Points
+const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+particles.renderOrder = 1;
+particles.scale.set(8, 8, 8);
+house.add(particles);

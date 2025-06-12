@@ -5,7 +5,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 // import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 // import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
 import { lights, lightHelpers, shadowHelpers, ghost1, ghost2, ghost3 } from '/src/lights.js'
-import { meshes, house, rocks } from '/src/meshes.js'
+import { meshes, house, rocks, particlesCount, particlesGeometry } from '/src/meshes.js'
 // import { axiHelper, axiArrows } from '/src/axiHelpers.js'
 // import { textures, fontLoader} from '/src/textures.js'
 // import { alphaT } from 'three/tsl';
@@ -176,12 +176,12 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // make less pixel renderind quality, because ratio:3 is too high for GPU, but our eyes will never see the difference
-renderer.setClearColor('pink');
+renderer.setClearColor('black');
 
 /**
  * Fog - туман
  */
-const fog = new THREE.Fog('pink', 1, 20);
+const fog = new THREE.Fog('black', 1, 20);
 scene.fog = fog;
 
 
@@ -290,6 +290,14 @@ const tick = () => {
     // sphereShadow.position.x = meshes.sphere.position.x;
     // sphereShadow.position.z = meshes.sphere.position.z;
     // sphereShadow.material.opacity = (1 - meshes.sphere.position.y) * 1.3;
+
+    // Update particles
+    for( let i = 0; i < particlesCount; i++) {
+        const i3 = i * 3;
+        const x = particlesGeometry.attributes.position.array[i3];
+        particlesGeometry.attributes.position.array[i3 + 1] = Math.sin(elapsedTime + x);
+    }
+    particlesGeometry.attributes.position.needsUpdate = true;
 
     // Update controls
     controls.update(); // for damping

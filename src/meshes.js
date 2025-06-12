@@ -355,7 +355,7 @@ house.add(lights.doorLight)
 // particles.scale.set(8, 3, 8);
 // house.add(particles);
 export const particlesGeometry = new THREE.BufferGeometry();
-export const particlesCount = 20000;
+export const particlesCount = 2000;
 
 const position = new Float32Array(particlesCount * 3);
 const colors = new Float32Array(particlesCount * 3);
@@ -388,5 +388,5 @@ particlesMaterial.vertexColors = true;
 // Points
 const particles = new THREE.Points(particlesGeometry, particlesMaterial);
 particles.renderOrder = 1;
-particles.scale.set(8, 8, 8);
+particles.scale.set(2, 2, 2);
 house.add(particles);
